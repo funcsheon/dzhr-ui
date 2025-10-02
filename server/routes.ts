@@ -12,7 +12,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { url } = z.object({ url: z.string().url() }).parse(req.body);
       
       const scrapedStyles = await scrapeWebsiteStyles(url);
-      const aiAnalysis = await analyzeWebsiteTemplate(url);
+      
+      let aiAnalysis = { colors: [], fonts: [], spacing: [], layouts: [] };
+      try {
+        aiAnalysis = await analyzeWebsiteTemplate(url);
+      } catch (aiError) {
+        console.log('AI analysis unavailable, using scraped data only:', aiError instanceof Error ? aiError.message : 'Unknown error');
+      }
       
       const colorSet = new Set([...(scrapedStyles.colors || []), ...(aiAnalysis.colors || [])]);
       const fontSet = new Set([...(scrapedStyles.fonts || []), ...(aiAnalysis.fonts || [])]);
@@ -39,7 +45,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { url } = z.object({ url: z.string().url() }).parse(req.body);
       
       const scrapedData = await scrapeDesignSystem(url);
-      const aiAnalysis = await analyzeDesignSystem(url);
+      
+      let aiAnalysis = { components: [], colors: [], typography: [], spacing: [], principles: [] };
+      try {
+        aiAnalysis = await analyzeDesignSystem(url);
+      } catch (aiError) {
+        console.log('AI analysis unavailable, using scraped data only:', aiError instanceof Error ? aiError.message : 'Unknown error');
+      }
       
       const componentSet = new Set([...(scrapedData.components || []), ...(aiAnalysis.components || [])]);
       const colorSet = new Set([...(scrapedData.colors || []), ...(aiAnalysis.colors || [])]);

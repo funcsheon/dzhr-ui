@@ -1,13 +1,30 @@
 import puppeteer from 'puppeteer';
 import * as cheerio from 'cheerio';
+import { execSync } from 'child_process';
+
+function getChromiumPath(): string | undefined {
+  try {
+    const path = execSync('which chromium', { encoding: 'utf-8' }).trim();
+    return path || undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 export async function scrapeWebsiteStyles(url: string) {
   let browser;
   
   try {
+    const chromiumPath = getChromiumPath();
     browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      ...(chromiumPath && { executablePath: chromiumPath }),
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+      ],
     });
 
     const page = await browser.newPage();
@@ -72,9 +89,16 @@ export async function scrapeDesignSystem(url: string) {
   let browser;
   
   try {
+    const chromiumPath = getChromiumPath();
     browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      ...(chromiumPath && { executablePath: chromiumPath }),
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+      ],
     });
 
     const page = await browser.newPage();
