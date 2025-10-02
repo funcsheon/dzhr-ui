@@ -1,10 +1,17 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { z } from "zod";
+import multer from "multer";
 import { scrapeWebsiteStyles, scrapeDesignSystem } from "./lib/scraper";
 import { analyzeWebsiteTemplate, analyzeDesignSystem, generateDesign } from "./lib/openai";
 import { deviceTypes, insertDesignSystemSchema } from "@shared/schema";
 import { storage } from "./storage";
+import { parseCodeFile } from "./lib/codeParser";
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -88,6 +95,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Delete design system error:', error);
       res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to delete design system' 
+      });
+    }
+  });
+
+  app.post("/api/parse-code-file", upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      const content = req.file.buffer.toString('utf-8');
+      const filename = req.file.originalname;
+      
+      const components = parseCodeFile(content, filename);
+      
+      res.json({ components });
+    } catch (error) {
+      console.error('Parse code file error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to parse code file' 
       });
     }
   });
