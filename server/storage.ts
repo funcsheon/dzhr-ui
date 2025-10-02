@@ -1,6 +1,6 @@
-import { type DesignSystem, type InsertDesignSystem, designSystems } from "@shared/schema";
+import { type DesignSystem, type InsertDesignSystem, designSystems, type PromptHistory, type InsertPromptHistory, promptHistory } from "@shared/schema";
 import { db } from "@db";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   getAllDesignSystems(): Promise<DesignSystem[]>;
@@ -9,6 +9,9 @@ export interface IStorage {
   createDesignSystem(designSystem: InsertDesignSystem): Promise<DesignSystem>;
   updateDesignSystem(id: string, designSystem: Partial<InsertDesignSystem>): Promise<DesignSystem | undefined>;
   deleteDesignSystem(id: string): Promise<boolean>;
+  
+  getRecentPrompts(limit: number): Promise<PromptHistory[]>;
+  savePrompt(prompt: InsertPromptHistory): Promise<PromptHistory>;
 }
 
 export class MemStorage implements IStorage {
@@ -43,6 +46,15 @@ export class MemStorage implements IStorage {
   async deleteDesignSystem(id: string): Promise<boolean> {
     const result = await db.delete(designSystems).where(eq(designSystems.id, id));
     return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async getRecentPrompts(limit: number = 20): Promise<PromptHistory[]> {
+    return db.select().from(promptHistory).orderBy(desc(promptHistory.createdAt)).limit(limit);
+  }
+
+  async savePrompt(insertPrompt: InsertPromptHistory): Promise<PromptHistory> {
+    const [prompt] = await db.insert(promptHistory).values(insertPrompt).returning();
+    return prompt;
   }
 }
 
