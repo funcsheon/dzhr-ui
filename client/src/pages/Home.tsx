@@ -25,6 +25,8 @@ export default function Home() {
   const [templateStyles, setTemplateStyles] = useState<any>();
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isAnalyzingTemplate, setIsAnalyzingTemplate] = useState(false);
+  const [isAnalyzingDesignSystem, setIsAnalyzingDesignSystem] = useState(false);
   const [designs, setDesigns] = useState<any[]>([]);
   const { toast } = useToast();
 
@@ -50,6 +52,7 @@ export default function Home() {
   const handleAnalyzeDesignSystem = async () => {
     if (!designSystemUrl) return;
     
+    setIsAnalyzingDesignSystem(true);
     try {
       const response = await fetch('/api/analyze-design-system', {
         method: 'POST',
@@ -85,12 +88,15 @@ export default function Home() {
         description: error instanceof Error ? error.message : "Could not analyze design system",
         variant: "destructive",
       });
+    } finally {
+      setIsAnalyzingDesignSystem(false);
     }
   };
 
   const handleAnalyzeTemplate = async () => {
     if (!templateUrl) return;
 
+    setIsAnalyzingTemplate(true);
     try {
       const response = await fetch('/api/analyze-template', {
         method: 'POST',
@@ -116,6 +122,8 @@ export default function Home() {
         description: error instanceof Error ? error.message : "Could not analyze template",
         variant: "destructive",
       });
+    } finally {
+      setIsAnalyzingTemplate(false);
     }
   };
 
@@ -278,6 +286,7 @@ export default function Home() {
                 designSystemUrl={designSystemUrl}
                 onDesignSystemUrlChange={setDesignSystemUrl}
                 onAnalyzeDesignSystem={handleAnalyzeDesignSystem}
+                isAnalyzing={isAnalyzingDesignSystem}
               />
               
               <DesignSystemLibrary
@@ -291,6 +300,7 @@ export default function Home() {
                 onUrlChange={setTemplateUrl}
                 templateStyles={templateStyles}
                 onAnalyze={handleAnalyzeTemplate}
+                isAnalyzing={isAnalyzingTemplate}
               />
               
               <PromptInput

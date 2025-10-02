@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
 
 interface TemplateUrlInputProps {
   templateUrl: string;
@@ -15,21 +14,16 @@ interface TemplateUrlInputProps {
     layouts?: string[];
   };
   onAnalyze: () => void;
+  isAnalyzing?: boolean;
 }
 
 export function TemplateUrlInput({ 
   templateUrl, 
   onUrlChange, 
   templateStyles,
-  onAnalyze 
+  onAnalyze,
+  isAnalyzing = false
 }: TemplateUrlInputProps) {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-  const handleAnalyze = () => {
-    setIsAnalyzing(true);
-    onAnalyze();
-    setTimeout(() => setIsAnalyzing(false), 2000);
-  };
 
   return (
     <div className="space-y-3">
@@ -48,7 +42,7 @@ export function TemplateUrlInput({
           />
         </div>
         <Button
-          onClick={handleAnalyze}
+          onClick={onAnalyze}
           disabled={!templateUrl || isAnalyzing}
           data-testid="button-analyze-template"
         >

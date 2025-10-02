@@ -11,6 +11,7 @@ interface DesignSystemUploadProps {
   designSystemUrl?: string;
   onDesignSystemUrlChange?: (url: string) => void;
   onAnalyzeDesignSystem?: () => void;
+  isAnalyzing?: boolean;
 }
 
 export function DesignSystemUpload({ 
@@ -18,10 +19,10 @@ export function DesignSystemUpload({
   onComponentsChange,
   designSystemUrl = '',
   onDesignSystemUrlChange,
-  onAnalyzeDesignSystem
+  onAnalyzeDesignSystem,
+  isAnalyzing = false
 }: DesignSystemUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
@@ -122,12 +123,6 @@ export function DesignSystemUpload({
     onComponentsChange(components.filter((_, i) => i !== index));
   };
 
-  const handleAnalyze = () => {
-    setIsAnalyzing(true);
-    onAnalyzeDesignSystem?.();
-    setTimeout(() => setIsAnalyzing(false), 2000);
-  };
-
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-medium">Design System</h3>
@@ -178,7 +173,7 @@ export function DesignSystemUpload({
               />
             </div>
             <Button
-              onClick={handleAnalyze}
+              onClick={onAnalyzeDesignSystem}
               disabled={!designSystemUrl || isAnalyzing}
               data-testid="button-analyze-design-system"
             >
