@@ -4,6 +4,7 @@ import { DesignSystemUpload } from "@/components/DesignSystemUpload";
 import { DesignSystemLibrary } from "@/components/DesignSystemLibrary";
 import { TemplateUrlInput } from "@/components/TemplateUrlInput";
 import { PromptInput } from "@/components/PromptInput";
+import { PromptHistory } from "@/components/PromptHistory";
 import { DesignCanvas } from "@/components/DesignCanvas";
 import { CodeExport } from "@/components/CodeExport";
 import { ExportPanel } from "@/components/ExportPanel";
@@ -12,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
 import { toPng } from 'html-to-image';
 import type { DesignSystem } from "@shared/schema";
 
@@ -117,6 +119,14 @@ export default function Home() {
     }
   };
 
+  const handleSelectPrompt = (selectedPrompt: string) => {
+    setPrompt(selectedPrompt);
+    toast({
+      title: "Prompt loaded",
+      description: "Previous prompt has been loaded into the editor",
+    });
+  };
+
   const handleGenerate = async () => {
     setIsGenerating(true);
     
@@ -140,6 +150,13 @@ export default function Home() {
 
       const { designs: generatedDesigns } = await response.json();
       setDesigns(generatedDesigns);
+      
+      await fetch('/api/prompt-history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/prompt-history'] });
       
       toast({
         title: "Designs generated",
@@ -283,6 +300,8 @@ export default function Home() {
                 isGenerating={isGenerating}
                 disabled={selectedDevices.length === 0}
               />
+              
+              <PromptHistory onSelectPrompt={handleSelectPrompt} />
             </div>
           </ScrollArea>
         </aside>
