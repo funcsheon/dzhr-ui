@@ -96,7 +96,10 @@ export default function Home() {
         body: JSON.stringify({ url: templateUrl }),
       });
 
-      if (!response.ok) throw new Error('Failed to analyze template');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to analyze template');
+      }
 
       const styles = await response.json();
       setTemplateStyles(styles);
@@ -130,7 +133,10 @@ export default function Home() {
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to generate designs');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to generate designs');
+      }
 
       const { designs: generatedDesigns } = await response.json();
       setDesigns(generatedDesigns);
