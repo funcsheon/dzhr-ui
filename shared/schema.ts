@@ -34,6 +34,24 @@ export const insertProjectSchema = createInsertSchema(projects).omit({
 export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type Project = typeof projects.$inferSelect;
 
+export const designSystems = pgTable("design_systems", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().unique(),
+  components: jsonb("components").notNull().$type<{ name: string; url: string }[]>().default([]),
+  sourceUrl: text("source_url"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertDesignSystemSchema = createInsertSchema(designSystems).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertDesignSystem = z.infer<typeof insertDesignSystemSchema>;
+export type DesignSystem = typeof designSystems.$inferSelect;
+
 export const deviceTypes = [
   { id: "phone", name: "Phone", width: 375, height: 812, icon: "Smartphone" },
   { id: "tablet", name: "Tablet", width: 768, height: 1024, icon: "Tablet" },
