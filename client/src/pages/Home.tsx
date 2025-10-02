@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { DeviceSelector } from "@/components/DeviceSelector";
 import { DesignSystemUpload } from "@/components/DesignSystemUpload";
+import { DesignSystemLibrary } from "@/components/DesignSystemLibrary";
 import { TemplateUrlInput } from "@/components/TemplateUrlInput";
 import { PromptInput } from "@/components/PromptInput";
 import { DesignCanvas } from "@/components/DesignCanvas";
@@ -12,6 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { toPng } from 'html-to-image';
+import type { DesignSystem } from "@shared/schema";
 
 export default function Home() {
   const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
@@ -30,6 +32,17 @@ export default function Home() {
         ? prev.filter(id => id !== deviceId)
         : [...prev, deviceId]
     );
+  };
+
+  const handleLoadDesignSystem = (system: DesignSystem) => {
+    setComponents(system.components || []);
+    if (system.sourceUrl) {
+      setDesignSystemUrl(system.sourceUrl);
+    }
+  };
+
+  const handleAddComponents = (newComponents: { name: string; url: string }[]) => {
+    setComponents(prev => [...prev, ...newComponents]);
   };
 
   const handleAnalyzeDesignSystem = async () => {
@@ -242,6 +255,12 @@ export default function Home() {
                 designSystemUrl={designSystemUrl}
                 onDesignSystemUrlChange={setDesignSystemUrl}
                 onAnalyzeDesignSystem={handleAnalyzeDesignSystem}
+              />
+              
+              <DesignSystemLibrary
+                components={components}
+                onLoadDesignSystem={handleLoadDesignSystem}
+                onAddComponents={handleAddComponents}
               />
               
               <TemplateUrlInput
