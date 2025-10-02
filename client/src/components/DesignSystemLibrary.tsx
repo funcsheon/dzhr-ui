@@ -179,8 +179,8 @@ export function DesignSystemLibrary({
   };
 
   return (
-    <Card className="p-4 space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between" data-testid="design-system-library-heading">
         <h3 className="text-sm font-medium">Design System Library</h3>
         <div className="flex gap-2">
           <Button
@@ -206,40 +206,42 @@ export function DesignSystemLibrary({
         </div>
       </div>
 
-      {designSystems.length > 0 && (
-        <div className="space-y-2">
-          <Label>Load Saved System</Label>
-          <div className="flex gap-2">
-            <Select onValueChange={handleLoad} data-testid="select-design-system">
-              <SelectTrigger>
-                <SelectValue placeholder="Select a design system" />
-              </SelectTrigger>
-              <SelectContent>
-                {designSystems.map((system) => (
-                  <SelectItem key={system.id} value={system.id}>
-                    {system.name} ({system.components?.length || 0} components)
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <Card className="p-4 space-y-4" data-testid="design-system-library-card">
+        {designSystems.length > 0 && (
+          <div className="space-y-2">
+            <Label>Load Saved System</Label>
+            <div className="flex gap-2">
+              <Select onValueChange={handleLoad} data-testid="select-design-system">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a design system" />
+                </SelectTrigger>
+                <SelectContent>
+                  {designSystems.map((system) => (
+                    <SelectItem key={system.id} value={system.id}>
+                      {system.name} ({system.components?.length || 0} components)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 mt-2">
+              {designSystems.map((system) => (
+                <div key={system.id} className="flex items-center gap-1 text-xs">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => deleteMutation.mutate(system.id)}
+                    data-testid={`button-delete-${system.id}`}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
-          
-          <div className="flex flex-wrap gap-2 mt-2">
-            {designSystems.map((system) => (
-              <div key={system.id} className="flex items-center gap-1 text-xs">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => deleteMutation.mutate(system.id)}
-                  data-testid={`button-delete-${system.id}`}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        )}
+      </Card>
 
       <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
         <DialogContent>
@@ -324,6 +326,6 @@ export function DesignSystemLibrary({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Card>
+    </div>
   );
 }

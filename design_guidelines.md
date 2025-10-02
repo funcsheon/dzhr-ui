@@ -1,4 +1,4 @@
-# Design Guidelines: Genius UI
+# Design Guidelines: dzhr UI
 
 ## Design Approach
 

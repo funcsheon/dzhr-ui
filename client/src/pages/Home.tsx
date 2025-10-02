@@ -159,7 +159,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           designs,
-          projectName: prompt.slice(0, 30) || 'Genius-UI',
+          projectName: prompt.slice(0, 30) || 'dzhr-UI',
         }),
       });
 
@@ -233,7 +233,7 @@ export default function Home() {
             <Sparkles className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold">Genius UI</h1>
+            <h1 className="text-lg font-semibold">dzhr UI</h1>
             <p className="text-xs text-muted-foreground">Create responsive designs instantly</p>
           </div>
         </div>
@@ -241,7 +241,7 @@ export default function Home() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <aside className="w-96 border-r overflow-hidden flex flex-col">
+        <aside style={{ width: '30rem' }} className="border-r overflow-hidden flex flex-col">
           <ScrollArea className="flex-1 p-6">
             <div className="space-y-6">
               <DeviceSelector
