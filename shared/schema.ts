@@ -52,6 +52,20 @@ export const insertDesignSystemSchema = createInsertSchema(designSystems).omit({
 export type InsertDesignSystem = z.infer<typeof insertDesignSystemSchema>;
 export type DesignSystem = typeof designSystems.$inferSelect;
 
+export const promptHistory = pgTable("prompt_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  prompt: text("prompt").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertPromptHistorySchema = createInsertSchema(promptHistory).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertPromptHistory = z.infer<typeof insertPromptHistorySchema>;
+export type PromptHistory = typeof promptHistory.$inferSelect;
+
 export const deviceTypes = [
   { id: "phone", name: "Phone", width: 375, height: 812, icon: "Smartphone" },
   { id: "tablet", name: "Tablet", width: 768, height: 1024, icon: "Tablet" },
