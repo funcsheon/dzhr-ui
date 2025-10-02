@@ -137,7 +137,7 @@ export function ExportPanel({ onExportFigma, onExportImage, disabled }: ExportPa
             disabled={selectedFormats.length === 0}
             data-testid="button-confirm-export"
           >
-            Export {selectedFormats.length > 0 && `(${selectedFormats.length})`}
+            Export{selectedFormats.length > 0 ? ` (${selectedFormats.length})` : ''}
           </Button>
         </DialogFooter>
       </DialogContent>
