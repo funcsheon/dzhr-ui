@@ -28,7 +28,10 @@ export function DesignSystemUpload({
     setIsDragging(false);
     
     const files = Array.from(e.dataTransfer.files).filter(file => 
-      file.type.startsWith('image/')
+      file.type.startsWith('image/') || 
+      file.name.endsWith('.fig') || 
+      file.name.endsWith('.sketch') ||
+      file.type === 'application/json'
     );
     
     files.forEach(file => {
@@ -95,12 +98,12 @@ export function DesignSystemUpload({
             <label className="flex flex-col items-center justify-center p-8 cursor-pointer">
               <Upload className="h-8 w-8 text-muted-foreground mb-2" />
               <span className="text-sm text-muted-foreground text-center">
-                Drop component images here or click to browse
+                Drop design files (.fig, .sketch) or images here
               </span>
               <input
                 type="file"
                 multiple
-                accept="image/*"
+                accept="image/*,.fig,.sketch,.json"
                 className="hidden"
                 onChange={handleFileInput}
                 data-testid="input-design-system-upload"

@@ -25,7 +25,7 @@ export function PromptInput({
         placeholder="Describe the design you want to generate... e.g., 'Create a modern landing page for a SaaS product with hero section, features, and pricing'"
         value={prompt}
         onChange={(e) => onPromptChange(e.target.value)}
-        className="min-h-32 resize-none"
+        className="min-h-48 resize-none"
         data-testid="textarea-prompt"
       />
 

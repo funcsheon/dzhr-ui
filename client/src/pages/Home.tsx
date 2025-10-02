@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { toPng } from 'html-to-image';
 
 export default function Home() {
-  const [selectedDevices, setSelectedDevices] = useState<string[]>(['phone', 'desktop']);
+  const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
   const [components, setComponents] = useState<{ name: string; url: string }[]>([]);
   const [designSystemUrl, setDesignSystemUrl] = useState('');
   const [templateUrl, setTemplateUrl] = useState('');
