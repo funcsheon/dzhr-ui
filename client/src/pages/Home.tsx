@@ -241,7 +241,7 @@ export default function Home() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <aside className="w-80 border-r overflow-hidden flex flex-col">
+        <aside className="w-96 border-r overflow-hidden flex flex-col">
           <ScrollArea className="flex-1 p-6">
             <div className="space-y-6">
               <DeviceSelector

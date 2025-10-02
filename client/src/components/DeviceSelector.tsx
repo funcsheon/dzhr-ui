@@ -25,7 +25,7 @@ export function DeviceSelector({ selectedDevices, onDeviceToggle }: DeviceSelect
           {selectedDevices.length} selected
         </Badge>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="flex gap-2">
         {deviceTypes.map((device) => {
           const Icon = iconMap[device.icon as keyof typeof iconMap];
           const isSelected = selectedDevices.includes(device.id);
@@ -33,22 +33,22 @@ export function DeviceSelector({ selectedDevices, onDeviceToggle }: DeviceSelect
           return (
             <Card
               key={device.id}
-              className={`p-4 cursor-pointer transition-all hover-elevate active-elevate-2 ${
+              className={`relative flex-1 p-2 cursor-pointer transition-all hover-elevate active-elevate-2 ${
                 isSelected ? 'border-primary' : ''
               }`}
               onClick={() => onDeviceToggle(device.id)}
               data-testid={`device-card-${device.id}`}
             >
-              <div className="flex flex-col items-center gap-2 text-center">
-                <Icon className={`h-6 w-6 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+              <div className="flex flex-col items-center gap-1 text-center">
+                <Icon className={`h-4 w-4 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
                 <span className="text-xs font-medium">{device.name}</span>
                 <span className="text-xs text-muted-foreground">
                   {device.width}×{device.height}
                 </span>
               </div>
               {isSelected && (
-                <div className="absolute top-2 right-2">
-                  <div className="h-2 w-2 rounded-full bg-primary" />
+                <div className="absolute top-1 right-1">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                 </div>
               )}
             </Card>
