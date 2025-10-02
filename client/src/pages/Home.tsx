@@ -140,7 +140,7 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           designs,
-          projectName: prompt.slice(0, 30) || 'AI-Design-Generator',
+          projectName: prompt.slice(0, 30) || 'Genius-UI',
         }),
       });
 
@@ -214,7 +214,7 @@ export default function Home() {
             <Sparkles className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold">AI Design Generator</h1>
+            <h1 className="text-lg font-semibold">Genius UI</h1>
             <p className="text-xs text-muted-foreground">Create responsive designs instantly</p>
           </div>
         </div>

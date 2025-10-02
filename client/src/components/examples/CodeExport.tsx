@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 export default function CodeExportExample() {
   const mockHtml = `<div class="hero">
-  <h1>Welcome to AI Design Generator</h1>
+  <h1>Welcome to Genius UI</h1>
   <p>Create beautiful designs instantly</p>
   <button>Get Started</button>
 </div>`;

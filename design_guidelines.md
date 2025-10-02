@@ -1,4 +1,4 @@
-# Design Guidelines: AI Design Generator
+# Design Guidelines: Genius UI
 
 ## Design Approach
 
