@@ -70,26 +70,32 @@ export async function generateDesign(params: GenerateDesignParams) {
   const openai = getOpenAIClient();
   const { prompt, device, designSystemUrl, designSystemComponents, templateStyles } = params;
 
-  let systemContext = `You are an expert web designer creating responsive HTML/CSS designs. 
-Create a complete, production-ready design for a ${device.name} (${device.width}x${device.height}px).`;
+  let systemContext = `You are an expert web designer. Create a complete, functional HTML/CSS design for a ${device.name} (${device.width}x${device.height}px).
+
+CRITICAL REQUIREMENTS:
+1. Return COMPLETE, WORKING HTML with actual content (not placeholders)
+2. Include ALL necessary CSS for styling
+3. Make it visually beautiful and modern
+4. Use semantic HTML5 elements
+5. Ensure responsive design within ${device.width}x${device.height}px constraints`;
+
+  if (designSystemUrl) {
+    systemContext += `\n\nFollow the design system at: ${designSystemUrl}`;
+  }
 
   if (templateStyles) {
-    systemContext += `\n\nUse these design styles from the template:
+    systemContext += `\n\nStyle constraints:
 - Colors: ${templateStyles.colors?.join(', ')}
 - Fonts: ${templateStyles.fonts?.join(', ')}
 - Spacing: ${templateStyles.spacing?.join(', ')}
 - Layouts: ${templateStyles.layouts?.join(', ')}`;
   }
 
-  if (designSystemUrl) {
-    systemContext += `\n\nThe design should follow the design system at: ${designSystemUrl}`;
-  }
-
   if (designSystemComponents && designSystemComponents.length > 0) {
-    systemContext += `\n\nAvailable design system components: ${designSystemComponents.map(c => c.name).join(', ')}`;
+    systemContext += `\n\nIncorporate these components: ${designSystemComponents.map(c => c.name).join(', ')}`;
   }
 
-  systemContext += `\n\nRespond with JSON containing "html" and "css" fields. The HTML should be complete and self-contained. The CSS should be modern and responsive.`;
+  systemContext += `\n\nReturn ONLY valid JSON: {"html": "complete HTML markup", "css": "complete CSS styles"}`;
 
   const response = await openai.chat.completions.create({
     model: "gpt-5",
@@ -100,7 +106,15 @@ Create a complete, production-ready design for a ${device.name} (${device.width}
       },
       {
         role: "user",
-        content: `Create a ${device.name} design for: ${prompt}. Make it visually stunning, modern, and professional. Return JSON with format: { "html": "...", "css": "..." }`
+        content: `Design requirement: ${prompt}
+
+Create a stunning ${device.name} interface with:
+- Complete HTML structure (header, main content, footer if needed)
+- Beautiful, modern CSS styling
+- Actual content (not Lorem Ipsum placeholders)
+- Professional color scheme and typography
+
+Return JSON with format: {"html": "<div>...</div>", "css": "div { ... }"}`
       }
     ],
     response_format: { type: "json_object" },
@@ -109,9 +123,28 @@ Create a complete, production-ready design for a ${device.name} (${device.width}
 
   const result = JSON.parse(response.choices[0].message.content || '{"html":"","css":""}');
   
+  console.log('OpenAI response:', {
+    hasHtml: !!result.html,
+    htmlLength: result.html?.length || 0,
+    cssLength: result.css?.length || 0
+  });
+
+  // If OpenAI returns empty, provide a fallback
+  if (!result.html || result.html.length === 0) {
+    console.error('OpenAI returned empty HTML, using fallback');
+    return {
+      device: device.id,
+      html: `<div style="padding: 20px; font-family: system-ui, -apple-system, sans-serif;">
+        <h1 style="color: #333; margin-bottom: 16px;">${prompt}</h1>
+        <p style="color: #666; line-height: 1.6;">Design generation incomplete. Please try again with a more specific prompt.</p>
+      </div>`,
+      css: `body { margin: 0; padding: 0; box-sizing: border-box; }`
+    };
+  }
+  
   return {
     device: device.id,
-    html: result.html || '',
+    html: result.html,
     css: result.css || '',
   };
 }
