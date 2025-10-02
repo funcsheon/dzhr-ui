@@ -16,11 +16,10 @@ import { useToast } from "@/hooks/use-toast";
 interface ExportPanelProps {
   onExportFigma: () => void;
   onExportImage: () => void;
-  onExportCode: () => void;
   disabled?: boolean;
 }
 
-export function ExportPanel({ onExportFigma, onExportImage, onExportCode, disabled }: ExportPanelProps) {
+export function ExportPanel({ onExportFigma, onExportImage, disabled }: ExportPanelProps) {
   const [open, setOpen] = useState(false);
   const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
   const { toast } = useToast();
@@ -39,13 +38,6 @@ export function ExportPanel({ onExportFigma, onExportImage, onExportCode, disabl
       description: "High-quality images for presentations",
       icon: ImageIcon,
       handler: onExportImage,
-    },
-    {
-      id: "code",
-      label: "HTML/CSS",
-      description: "Production-ready code for developers",
-      icon: FileCode,
-      handler: onExportCode,
     },
   ];
 

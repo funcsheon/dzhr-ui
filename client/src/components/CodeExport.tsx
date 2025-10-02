@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Download } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -32,9 +32,54 @@ export function CodeExport({ html, css }: CodeExportProps) {
     });
   };
 
+  const downloadFile = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+
+    toast({
+      title: "File downloaded",
+      description: `${filename} has been downloaded`,
+    });
+  };
+
+  const downloadHtml = () => {
+    downloadFile(html, 'design.html', 'text/html');
+  };
+
+  const downloadCss = () => {
+    downloadFile(css, 'design.css', 'text/css');
+  };
+
+  const downloadBoth = () => {
+    downloadFile(html, 'design.html', 'text/html');
+    setTimeout(() => {
+      downloadFile(css, 'design.css', 'text/css');
+    }, 100);
+  };
+
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium">Generated Code</h3>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-medium">Generated Code</h3>
+          <p className="text-xs text-muted-foreground">Copy or download HTML/CSS</p>
+        </div>
+        <Button
+          size="sm"
+          onClick={downloadBoth}
+          data-testid="button-download-all-code"
+        >
+          <Download className="h-4 w-4 mr-2" />
+          Download All
+        </Button>
+      </div>
       
       <Tabs defaultValue="html" className="w-full">
         <TabsList className="w-full">
@@ -43,7 +88,16 @@ export function CodeExport({ html, css }: CodeExportProps) {
         </TabsList>
         
         <TabsContent value="html" className="space-y-2">
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={downloadHtml}
+              data-testid="button-download-html"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Download
+            </Button>
             <Button
               size="sm"
               variant="outline"
@@ -58,7 +112,7 @@ export function CodeExport({ html, css }: CodeExportProps) {
               ) : (
                 <>
                   <Copy className="h-4 w-4 mr-2" />
-                  Copy HTML
+                  Copy
                 </>
               )}
             </Button>
@@ -71,7 +125,16 @@ export function CodeExport({ html, css }: CodeExportProps) {
         </TabsContent>
         
         <TabsContent value="css" className="space-y-2">
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={downloadCss}
+              data-testid="button-download-css"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Download
+            </Button>
             <Button
               size="sm"
               variant="outline"
@@ -86,7 +149,7 @@ export function CodeExport({ html, css }: CodeExportProps) {
               ) : (
                 <>
                   <Copy className="h-4 w-4 mr-2" />
-                  Copy CSS
+                  Copy
                 </>
               )}
             </Button>
