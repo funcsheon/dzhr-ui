@@ -39,6 +39,10 @@ Preferred communication style: Simple, everyday language.
 **API Design:** RESTful endpoints under `/api` prefix:
 - `POST /api/analyze-template` - Analyzes website URLs to extract design patterns
 - `POST /api/analyze-design-system` - Analyzes design system documentation
+- `POST /api/parse-code-file` - Parses uploaded code files (CSS, JS, TS, TSX) to extract component definitions
+- `POST /api/design-systems` - Save design system library to database
+- `GET /api/design-systems` - Retrieve all saved design systems
+- `DELETE /api/design-systems/:id` - Delete a design system by ID
 
 **Request Validation:** Zod schemas for runtime type checking and validation.
 
@@ -59,6 +63,11 @@ Preferred communication style: Simple, everyday language.
   - Design system components and URLs
   - Template URLs and extracted styles
   - Generated designs with HTML/CSS/images per device
+- **Design Systems table** with fields for:
+  - Unique name (primary key)
+  - Source URL (optional)
+  - Components array (JSONB) containing component definitions with name, type, and URL
+  - Created timestamp
 
 **Migration Strategy:** Database migrations configured in `drizzle.config.ts` with output to `/migrations` directory.
 
@@ -112,6 +121,14 @@ Preferred communication style: Simple, everyday language.
 - **clsx & tailwind-merge** - Conditional class name handling
 - **date-fns** - Date manipulation
 - **zod** - Runtime type validation
+- **multer** - File upload handling for code file parsing
+
+**Code Parsing:**
+- **Custom Code Parser** (`server/lib/codeParser.ts`) - Extracts components from code files:
+  - **CSS/SCSS/LESS**: Identifies class names matching component patterns (btn-, card-, modal-, input-, etc.)
+  - **JavaScript/TypeScript**: Extracts React component names from function/class declarations and exports
+  - **JSON**: Parses component definitions from JSON structure
+  - Supports batch uploads with functional state management to preserve all components
 
 **Development Tools:**
 - **Replit-specific plugins** - Runtime error overlay, cartographer, dev banner for Replit environment
