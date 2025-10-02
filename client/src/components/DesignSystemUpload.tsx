@@ -7,7 +7,7 @@ import { useCallback, useState } from "react";
 
 interface DesignSystemUploadProps {
   components: { name: string; url: string }[];
-  onComponentsChange: (components: { name: string; url: string }[]) => void;
+  onComponentsChange: React.Dispatch<React.SetStateAction<{ name: string; url: string }[]>>;
   designSystemUrl?: string;
   onDesignSystemUrlChange?: (url: string) => void;
   onAnalyzeDesignSystem?: () => void;
@@ -49,7 +49,7 @@ export function DesignSystemUpload({
               name: comp.name,
               url: comp.url || '',
             }));
-            onComponentsChange([...components, ...newComponents]);
+            onComponentsChange(prev => [...prev, ...newComponents]);
           }
         } catch (error) {
           console.error('Failed to parse code file:', error);
@@ -66,13 +66,13 @@ export function DesignSystemUpload({
               name: file.name.replace(/\.[^/.]+$/, ""),
               url: event.target.result as string,
             };
-            onComponentsChange([...components, newComponent]);
+            onComponentsChange(prev => [...prev, newComponent]);
           }
         };
         reader.readAsDataURL(file);
       }
     }
-  }, [components, onComponentsChange]);
+  }, [onComponentsChange]);
 
   const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -97,7 +97,7 @@ export function DesignSystemUpload({
               name: comp.name,
               url: comp.url || '',
             }));
-            onComponentsChange([...components, ...newComponents]);
+            onComponentsChange(prev => [...prev, ...newComponents]);
           }
         } catch (error) {
           console.error('Failed to parse code file:', error);
@@ -110,7 +110,7 @@ export function DesignSystemUpload({
               name: file.name.replace(/\.[^/.]+$/, ""),
               url: event.target.result as string,
             };
-            onComponentsChange([...components, newComponent]);
+            onComponentsChange(prev => [...prev, newComponent]);
           }
         };
         reader.readAsDataURL(file);
