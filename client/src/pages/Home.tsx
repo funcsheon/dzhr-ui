@@ -239,6 +239,12 @@ export default function Home() {
     }
   };
 
+  const handleExportCode = () => {
+    toast({
+      title: "Code ready",
+      description: "Check the Code tab to copy HTML/CSS",
+    });
+  };
 
   const activeDesign = designs.find(d => d.device === selectedDevices[0]) || designs[0];
 
@@ -318,6 +324,7 @@ export default function Home() {
                 <ExportPanel
                   onExportFigma={handleExportFigma}
                   onExportImage={handleExportImage}
+                  onExportCode={handleExportCode}
                   disabled={designs.length === 0}
                 />
               </TabsContent>
