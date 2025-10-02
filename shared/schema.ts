@@ -9,6 +9,7 @@ export const projects = pgTable("projects", {
   prompt: text("prompt").notNull(),
   devices: jsonb("devices").notNull().$type<string[]>(),
   designSystemComponents: jsonb("design_system_components").$type<{ name: string; url: string }[]>(),
+  designSystemUrl: text("design_system_url"),
   templateUrl: text("template_url"),
   templateStyles: jsonb("template_styles").$type<{
     colors?: string[];

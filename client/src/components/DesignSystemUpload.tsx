@@ -1,15 +1,27 @@
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { Upload, X, Link, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCallback, useState } from "react";
 
 interface DesignSystemUploadProps {
   components: { name: string; url: string }[];
   onComponentsChange: (components: { name: string; url: string }[]) => void;
+  designSystemUrl?: string;
+  onDesignSystemUrlChange?: (url: string) => void;
+  onAnalyzeDesignSystem?: () => void;
 }
 
-export function DesignSystemUpload({ components, onComponentsChange }: DesignSystemUploadProps) {
+export function DesignSystemUpload({ 
+  components, 
+  onComponentsChange,
+  designSystemUrl = '',
+  onDesignSystemUrlChange,
+  onAnalyzeDesignSystem
+}: DesignSystemUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -55,33 +67,81 @@ export function DesignSystemUpload({ components, onComponentsChange }: DesignSys
     onComponentsChange(components.filter((_, i) => i !== index));
   };
 
+  const handleAnalyze = () => {
+    setIsAnalyzing(true);
+    onAnalyzeDesignSystem?.();
+    setTimeout(() => setIsAnalyzing(false), 2000);
+  };
+
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium">Design System Components</h3>
+      <h3 className="text-sm font-medium">Design System</h3>
       
-      <Card
-        className={`border-2 border-dashed transition-colors ${
-          isDragging ? 'border-primary bg-accent/50' : 'border-border'
-        }`}
-        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={handleDrop}
-      >
-        <label className="flex flex-col items-center justify-center p-8 cursor-pointer">
-          <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-          <span className="text-sm text-muted-foreground text-center">
-            Drop component images here or click to browse
-          </span>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileInput}
-            data-testid="input-design-system-upload"
-          />
-        </label>
-      </Card>
+      <Tabs defaultValue="upload" className="w-full">
+        <TabsList className="w-full">
+          <TabsTrigger value="upload" className="flex-1">Upload</TabsTrigger>
+          <TabsTrigger value="url" className="flex-1">URL</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="upload" className="mt-3">
+          <Card
+            className={`border-2 border-dashed transition-colors ${
+              isDragging ? 'border-primary bg-accent/50' : 'border-border'
+            }`}
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={handleDrop}
+          >
+            <label className="flex flex-col items-center justify-center p-8 cursor-pointer">
+              <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+              <span className="text-sm text-muted-foreground text-center">
+                Drop component images here or click to browse
+              </span>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileInput}
+                data-testid="input-design-system-upload"
+              />
+            </label>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="url" className="mt-3 space-y-3">
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Link className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="url"
+                placeholder="https://example.com/design-system"
+                value={designSystemUrl}
+                onChange={(e) => onDesignSystemUrlChange?.(e.target.value)}
+                className="pl-9"
+                data-testid="input-design-system-url"
+              />
+            </div>
+            <Button
+              onClick={handleAnalyze}
+              disabled={!designSystemUrl || isAnalyzing}
+              data-testid="button-analyze-design-system"
+            >
+              {isAnalyzing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                'Analyze'
+              )}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Provide a link to your design system documentation or component library
+          </p>
+        </TabsContent>
+      </Tabs>
 
       {components.length > 0 && (
         <div className="grid grid-cols-2 gap-2">

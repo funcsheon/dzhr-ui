@@ -11,10 +11,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { toPng } from 'html-to-image';
 
 export default function Home() {
   const [selectedDevices, setSelectedDevices] = useState<string[]>(['phone', 'desktop']);
   const [components, setComponents] = useState<{ name: string; url: string }[]>([]);
+  const [designSystemUrl, setDesignSystemUrl] = useState('');
   const [templateUrl, setTemplateUrl] = useState('');
   const [templateStyles, setTemplateStyles] = useState<any>();
   const [prompt, setPrompt] = useState('');
@@ -30,62 +32,169 @@ export default function Home() {
     );
   };
 
-  const handleAnalyzeTemplate = () => {
-    setTemplateStyles({
-      colors: ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b'],
-      fonts: ['Inter', 'JetBrains Mono'],
-      spacing: ['16px', '24px', '32px'],
-      layouts: ['Grid', 'Flexbox'],
-    });
-    toast({
-      title: "Template analyzed",
-      description: "Successfully extracted styles from the website",
-    });
+  const handleAnalyzeDesignSystem = async () => {
+    if (!designSystemUrl) return;
+    
+    try {
+      const response = await fetch('/api/analyze-design-system', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: designSystemUrl }),
+      });
+
+      if (!response.ok) throw new Error('Failed to analyze design system');
+
+      const data = await response.json();
+      
+      if (data.components && data.components.length > 0) {
+        const newComponents = data.components.map((name: string) => ({
+          name,
+          url: '',
+        }));
+        setComponents(prev => [...prev, ...newComponents]);
+      }
+      
+      toast({
+        title: "Design system analyzed",
+        description: `Found ${data.components?.length || 0} components`,
+      });
+    } catch (error) {
+      toast({
+        title: "Analysis failed",
+        description: error instanceof Error ? error.message : "Could not analyze design system",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAnalyzeTemplate = async () => {
+    if (!templateUrl) return;
+
+    try {
+      const response = await fetch('/api/analyze-template', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: templateUrl }),
+      });
+
+      if (!response.ok) throw new Error('Failed to analyze template');
+
+      const styles = await response.json();
+      setTemplateStyles(styles);
+      
+      toast({
+        title: "Template analyzed",
+        description: "Successfully extracted styles from the website",
+      });
+    } catch (error) {
+      toast({
+        title: "Analysis failed",
+        description: error instanceof Error ? error.message : "Could not analyze template",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleGenerate = async () => {
     setIsGenerating(true);
     
-    setTimeout(() => {
-      const mockDesigns = selectedDevices.map(device => ({
-        device,
-        html: `
-          <div style="padding: ${device === 'phone' ? '24px' : '64px'}; font-family: Inter, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100%; display: flex; align-items: center; justify-content: center;">
-            <div style="text-align: center; color: white;">
-              <h1 style="font-size: ${device === 'phone' ? '32px' : '56px'}; font-weight: 700; margin-bottom: 16px;">${prompt.slice(0, 50)}</h1>
-              <p style="font-size: ${device === 'phone' ? '16px' : '20px'}; margin-bottom: 32px; opacity: 0.9;">Generated with AI Design Generator</p>
-              <button style="background: white; color: #667eea; padding: ${device === 'phone' ? '12px 24px' : '16px 32px'}; border-radius: 8px; border: none; font-weight: 600; font-size: ${device === 'phone' ? '14px' : '16px'}; cursor: pointer;">Get Started</button>
-            </div>
-          </div>
-        `,
-        css: `
-          body { margin: 0; font-family: Inter, sans-serif; }
-          * { box-sizing: border-box; }
-        `,
-      }));
-      
-      setDesigns(mockDesigns);
-      setIsGenerating(false);
+    try {
+      const response = await fetch('/api/generate-designs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          devices: selectedDevices,
+          designSystemUrl: designSystemUrl || undefined,
+          designSystemComponents: components.length > 0 ? components : undefined,
+          templateStyles: templateStyles || undefined,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to generate designs');
+
+      const { designs: generatedDesigns } = await response.json();
+      setDesigns(generatedDesigns);
       
       toast({
         title: "Designs generated",
-        description: `Created ${mockDesigns.length} responsive designs`,
+        description: `Created ${generatedDesigns.length} responsive designs`,
       });
-    }, 2500);
+    } catch (error) {
+      toast({
+        title: "Generation failed",
+        description: error instanceof Error ? error.message : "Could not generate designs",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
-  const handleExportFigma = () => {
-    toast({
-      title: "Exporting to Figma",
-      description: "Your .fig file will download shortly",
-    });
+  const handleExportFigma = async () => {
+    if (designs.length === 0) return;
+
+    try {
+      const response = await fetch('/api/export-figma', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          designs,
+          projectName: prompt.slice(0, 30) || 'AI-Design-Generator',
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to export to Figma');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${prompt.slice(0, 30) || 'design'}.fig.json`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast({
+        title: "Exported successfully",
+        description: "Your Figma file has been downloaded",
+      });
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: error instanceof Error ? error.message : "Could not export to Figma",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleExportImage = () => {
-    toast({
-      title: "Exporting as image",
-      description: "Generating PNG files...",
-    });
+  const handleExportImage = async () => {
+    if (designs.length === 0) return;
+
+    try {
+      const previewElement = document.querySelector('[data-testid="design-preview"]');
+      if (!previewElement) {
+        throw new Error('Design preview not found');
+      }
+
+      const dataUrl = await toPng(previewElement as HTMLElement);
+      const link = document.createElement('a');
+      link.download = `${prompt.slice(0, 30) || 'design'}.png`;
+      link.href = dataUrl;
+      link.click();
+
+      toast({
+        title: "Exported successfully",
+        description: "Your design has been exported as PNG",
+      });
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: error instanceof Error ? error.message : "Could not export image",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleExportCode = () => {
@@ -124,6 +233,9 @@ export default function Home() {
               <DesignSystemUpload
                 components={components}
                 onComponentsChange={setComponents}
+                designSystemUrl={designSystemUrl}
+                onDesignSystemUrlChange={setDesignSystemUrl}
+                onAnalyzeDesignSystem={handleAnalyzeDesignSystem}
               />
               
               <TemplateUrlInput
