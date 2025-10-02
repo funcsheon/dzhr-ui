@@ -29,21 +29,21 @@ export function ExportPanel({ onExportFigma, onExportImage, onExportCode, disabl
     {
       id: "figma",
       label: "Figma File",
-      description: "Editable design file for Figma",
+      description: "Import directly into Figma for further editing and collaboration",
       icon: FileCode,
       handler: onExportFigma,
     },
     {
       id: "image",
-      label: "PNG/SVG",
-      description: "High-quality images for presentations",
+      label: "Image Files",
+      description: "Download as PNG or SVG for presentations and mockups",
       icon: ImageIcon,
       handler: onExportImage,
     },
     {
       id: "code",
-      label: "HTML/CSS",
-      description: "Production-ready code for developers",
+      label: "Source Code",
+      description: "Get production-ready HTML and CSS to use in your projects",
       icon: FileCode,
       handler: onExportCode,
     },
@@ -99,7 +99,7 @@ export function ExportPanel({ onExportFigma, onExportImage, onExportCode, disabl
         <DialogHeader>
           <DialogTitle>Export Designs</DialogTitle>
           <DialogDescription>
-            Select one or more formats to export your designs
+            Choose one or more export formats. Your designs will be downloaded in all selected formats.
           </DialogDescription>
         </DialogHeader>
         
