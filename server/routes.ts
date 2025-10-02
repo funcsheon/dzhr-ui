@@ -33,6 +33,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(designSystem);
     } catch (error) {
       console.error('Create design system error:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          error: 'Invalid input data',
+          details: error.errors 
+        });
+      }
       res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to create design system' 
       });
@@ -56,6 +62,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(designSystem);
     } catch (error) {
       console.error('Update design system error:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          error: 'Invalid input data',
+          details: error.errors 
+        });
+      }
       res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to update design system' 
       });
