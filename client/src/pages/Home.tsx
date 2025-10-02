@@ -325,7 +325,6 @@ export default function Home() {
                   onExportFigma={handleExportFigma}
                   onExportImage={handleExportImage}
                   onExportCode={handleExportCode}
-                  disabled={designs.length === 0}
                 />
               </TabsContent>
               
