@@ -3,9 +3,82 @@ import { createServer, type Server } from "http";
 import { z } from "zod";
 import { scrapeWebsiteStyles, scrapeDesignSystem } from "./lib/scraper";
 import { analyzeWebsiteTemplate, analyzeDesignSystem, generateDesign } from "./lib/openai";
-import { deviceTypes } from "@shared/schema";
+import { deviceTypes, insertDesignSystemSchema } from "@shared/schema";
+import { storage } from "./storage";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  app.get("/api/design-systems", async (_req, res) => {
+    try {
+      const systems = await storage.getAllDesignSystems();
+      res.json(systems);
+    } catch (error) {
+      console.error('Get design systems error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to get design systems' 
+      });
+    }
+  });
+
+  app.post("/api/design-systems", async (req, res) => {
+    try {
+      const data = insertDesignSystemSchema.parse(req.body);
+      
+      const existing = await storage.getDesignSystemByName(data.name);
+      if (existing) {
+        return res.status(400).json({ error: 'Design system with this name already exists' });
+      }
+      
+      const designSystem = await storage.createDesignSystem(data);
+      res.json(designSystem);
+    } catch (error) {
+      console.error('Create design system error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to create design system' 
+      });
+    }
+  });
+
+  app.patch("/api/design-systems/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = z.object({
+        name: z.string().optional(),
+        components: z.array(z.object({ name: z.string(), url: z.string() })).optional(),
+        sourceUrl: z.string().optional(),
+      }).parse(req.body);
+
+      const designSystem = await storage.updateDesignSystem(id, updates);
+      if (!designSystem) {
+        return res.status(404).json({ error: 'Design system not found' });
+      }
+
+      res.json(designSystem);
+    } catch (error) {
+      console.error('Update design system error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to update design system' 
+      });
+    }
+  });
+
+  app.delete("/api/design-systems/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteDesignSystem(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ error: 'Design system not found' });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Delete design system error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to delete design system' 
+      });
+    }
+  });
   
   app.post("/api/analyze-template", async (req, res) => {
     try {

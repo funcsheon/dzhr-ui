@@ -1,13 +1,8 @@
-import { type User, type InsertUser, type DesignSystem, type InsertDesignSystem, designSystems } from "@shared/schema";
-import { randomUUID } from "crypto";
-import { db } from "./db";
+import { type DesignSystem, type InsertDesignSystem, designSystems } from "@shared/schema";
+import { db } from "@db";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
-  
   getAllDesignSystems(): Promise<DesignSystem[]>;
   getDesignSystem(id: string): Promise<DesignSystem | undefined>;
   getDesignSystemByName(name: string): Promise<DesignSystem | undefined>;
@@ -17,29 +12,6 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
-  }
-
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
-  }
-
   async getAllDesignSystems(): Promise<DesignSystem[]> {
     return db.select().from(designSystems);
   }
