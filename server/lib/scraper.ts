@@ -108,22 +108,64 @@ export async function scrapeDesignSystem(url: string) {
     const $ = cheerio.load(html);
     
     const components = new Set<string>();
+    const componentLinks = new Set<string>();
     const colorTokens = new Set<string>();
     
-    $('h1, h2, h3, h4').each((_, el) => {
+    $('h1, h2, h3, h4, h5, h6').each((_, el) => {
       const text = $(el).text().toLowerCase();
       if (text.includes('button')) components.add('Button');
       if (text.includes('card')) components.add('Card');
       if (text.includes('input')) components.add('Input');
-      if (text.includes('modal')) components.add('Modal');
-      if (text.includes('dropdown')) components.add('Dropdown');
+      if (text.includes('modal') || text.includes('dialog')) components.add('Modal');
+      if (text.includes('dropdown') || text.includes('select')) components.add('Dropdown');
       if (text.includes('table')) components.add('Table');
       if (text.includes('form')) components.add('Form');
+      if (text.includes('alert') || text.includes('toast')) components.add('Alert');
+      if (text.includes('avatar')) components.add('Avatar');
+      if (text.includes('badge')) components.add('Badge');
+      if (text.includes('checkbox')) components.add('Checkbox');
+      if (text.includes('radio')) components.add('Radio');
+      if (text.includes('switch') || text.includes('toggle')) components.add('Switch');
+      if (text.includes('slider')) components.add('Slider');
+      if (text.includes('tabs')) components.add('Tabs');
+      if (text.includes('accordion')) components.add('Accordion');
+      if (text.includes('tooltip')) components.add('Tooltip');
+      if (text.includes('popover')) components.add('Popover');
+      if (text.includes('menu')) components.add('Menu');
+      if (text.includes('navbar') || text.includes('navigation')) components.add('Navigation');
+      if (text.includes('breadcrumb')) components.add('Breadcrumb');
+      if (text.includes('pagination')) components.add('Pagination');
+      if (text.includes('spinner') || text.includes('loader')) components.add('Spinner');
+      if (text.includes('progress')) components.add('Progress');
+      if (text.includes('skeleton')) components.add('Skeleton');
     });
 
-    $('[class*="color"], [class*="palette"]').each((_, el) => {
+    $('a[href]').each((_, el) => {
+      const href = $(el).attr('href');
+      const text = $(el).text().toLowerCase();
+      
+      if (href && (
+        href.includes('component') || 
+        href.includes('button') || 
+        href.includes('card') ||
+        href.includes('input') ||
+        text.includes('component') ||
+        text.includes('button') ||
+        text.includes('card')
+      )) {
+        const fullUrl = href.startsWith('http') ? href : new URL(href, url).href;
+        componentLinks.add(fullUrl);
+        
+        const componentName = text.trim() || href.split('/').pop() || '';
+        if (componentName && componentName.length < 50) {
+          components.add(componentName.charAt(0).toUpperCase() + componentName.slice(1));
+        }
+      }
+    });
+
+    $('[class*="color"], [class*="palette"], [class*="swatch"]').each((_, el) => {
       const bgColor = $(el).css('background-color');
-      if (bgColor && bgColor !== 'transparent') {
+      if (bgColor && bgColor !== 'transparent' && bgColor !== 'rgba(0, 0, 0, 0)') {
         colorTokens.add(bgColor);
       }
     });
@@ -131,7 +173,8 @@ export async function scrapeDesignSystem(url: string) {
     await browser.close();
 
     return {
-      components: Array.from(components),
+      components: Array.from(components).filter(c => c.length > 0 && c.length < 30),
+      componentLinks: Array.from(componentLinks).slice(0, 20),
       colors: Array.from(colorTokens).slice(0, 10),
       typography: ['heading-1', 'heading-2', 'body', 'caption'],
       spacing: ['xs', 'sm', 'md', 'lg', 'xl'],

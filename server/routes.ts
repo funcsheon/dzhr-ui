@@ -9,7 +9,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/analyze-template", async (req, res) => {
     try {
-      const { url } = z.object({ url: z.string().url() }).parse(req.body);
+      const { url } = z.object({ url: z.string().min(1) }).parse(req.body);
+      
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        throw new Error('URL must start with http:// or https://');
+      }
       
       const scrapedStyles = await scrapeWebsiteStyles(url);
       
@@ -42,7 +46,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/analyze-design-system", async (req, res) => {
     try {
-      const { url } = z.object({ url: z.string().url() }).parse(req.body);
+      const { url } = z.object({ url: z.string().min(1) }).parse(req.body);
+      
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        throw new Error('URL must start with http:// or https://');
+      }
       
       const scrapedData = await scrapeDesignSystem(url);
       

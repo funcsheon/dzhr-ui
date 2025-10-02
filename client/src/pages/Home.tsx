@@ -42,21 +42,27 @@ export default function Home() {
         body: JSON.stringify({ url: designSystemUrl }),
       });
 
-      if (!response.ok) throw new Error('Failed to analyze design system');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to analyze design system');
+      }
 
       const data = await response.json();
       
       if (data.components && data.components.length > 0) {
-        const newComponents = data.components.map((name: string) => ({
+        const newComponents = data.components.map((name: string, index: number) => ({
           name,
-          url: '',
+          url: data.componentLinks?.[index] || designSystemUrl,
         }));
         setComponents(prev => [...prev, ...newComponents]);
       }
       
+      const componentCount = data.components?.length || 0;
+      const linkCount = data.componentLinks?.length || 0;
+      
       toast({
         title: "Design system analyzed",
-        description: `Found ${data.components?.length || 0} components`,
+        description: `Found ${componentCount} components${linkCount > 0 ? ` with ${linkCount} links` : ''}`,
       });
     } catch (error) {
       toast({
