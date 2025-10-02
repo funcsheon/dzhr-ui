@@ -23,6 +23,8 @@ export function DesignSystemUpload({
   isAnalyzing = false
 }: DesignSystemUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [manualComponentName, setManualComponentName] = useState('');
+  const [manualComponentUrl, setManualComponentUrl] = useState('');
 
   const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
@@ -123,14 +125,26 @@ export function DesignSystemUpload({
     onComponentsChange(components.filter((_, i) => i !== index));
   };
 
+  const handleAddManualComponent = () => {
+    if (manualComponentName.trim() && manualComponentUrl.trim()) {
+      onComponentsChange(prev => [...prev, { 
+        name: manualComponentName.trim(), 
+        url: manualComponentUrl.trim() 
+      }]);
+      setManualComponentName('');
+      setManualComponentUrl('');
+    }
+  };
+
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-medium">Design System</h3>
       
       <Tabs defaultValue="upload" className="w-full">
-        <TabsList className="w-full">
-          <TabsTrigger value="upload" className="flex-1">Upload</TabsTrigger>
-          <TabsTrigger value="url" className="flex-1">URL</TabsTrigger>
+        <TabsList className="w-full grid grid-cols-3">
+          <TabsTrigger value="upload">Upload</TabsTrigger>
+          <TabsTrigger value="url">Analyze</TabsTrigger>
+          <TabsTrigger value="manual">Add Links</TabsTrigger>
         </TabsList>
         
         <TabsContent value="upload" className="mt-3">
@@ -191,32 +205,59 @@ export function DesignSystemUpload({
             Provide a link to your design system documentation or component library
           </p>
         </TabsContent>
+
+        <TabsContent value="manual" className="mt-3 space-y-3">
+          <div className="space-y-2">
+            <Input
+              placeholder="Component name (e.g., Button, Card)"
+              value={manualComponentName}
+              onChange={(e) => setManualComponentName(e.target.value)}
+              data-testid="input-manual-component-name"
+            />
+            <Input
+              placeholder="Component URL or identifier"
+              value={manualComponentUrl}
+              onChange={(e) => setManualComponentUrl(e.target.value)}
+              data-testid="input-manual-component-url"
+            />
+            <Button
+              className="w-full"
+              onClick={handleAddManualComponent}
+              disabled={!manualComponentName.trim() || !manualComponentUrl.trim()}
+              data-testid="button-add-manual-component"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Add Component
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Manually add component references by name and URL
+          </p>
+        </TabsContent>
       </Tabs>
 
       {components.length > 0 && (
-        <div className="grid grid-cols-2 gap-2">
-          {components.map((component, index) => (
-            <Card key={index} className="p-2 relative group">
-              <div className="aspect-square rounded-md bg-muted flex items-center justify-center overflow-hidden">
-                <img 
-                  src={component.url} 
-                  alt={component.name}
-                  className="max-w-full max-h-full object-contain"
-                />
+        <Card className="p-3 space-y-2">
+          <p className="text-xs font-medium text-muted-foreground">
+            {components.length} component{components.length !== 1 ? 's' : ''} analyzed and ready to apply
+          </p>
+          <div className="space-y-1">
+            {components.map((component, index) => (
+              <div key={index} className="flex items-center justify-between gap-2 text-xs p-2 rounded bg-muted/50">
+                <span className="truncate font-medium">{component.name}</span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 flex-shrink-0"
+                  onClick={() => removeComponent(index)}
+                  data-testid={`button-remove-component-${index}`}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
               </div>
-              <p className="text-xs mt-1 truncate">{component.name}</p>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => removeComponent(index)}
-                data-testid={`button-remove-component-${index}`}
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Card>
       )}
     </div>
   );

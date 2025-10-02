@@ -207,39 +207,37 @@ export function DesignSystemLibrary({
       </div>
 
       <Card className="p-4 space-y-4" data-testid="design-system-library-card">
-        {designSystems.length > 0 && (
+        {designSystems.length > 0 ? (
           <div className="space-y-2">
             <Label>Load Saved System</Label>
-            <div className="flex gap-2">
-              <Select onValueChange={handleLoad} data-testid="select-design-system">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a design system" />
-                </SelectTrigger>
-                <SelectContent>
-                  {designSystems.map((system) => (
-                    <SelectItem key={system.id} value={system.id}>
-                      {system.name} ({system.components?.length || 0} components)
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="space-y-2">
               {designSystems.map((system) => (
-                <div key={system.id} className="flex items-center gap-1 text-xs">
+                <div key={system.id} className="flex items-center gap-2">
                   <Button
-                    size="sm"
+                    variant="outline"
+                    className="flex-1 justify-start"
+                    onClick={() => handleLoad(system.id)}
+                    data-testid={`button-load-${system.id}`}
+                  >
+                    <FolderOpen className="h-4 w-4 mr-2" />
+                    {system.name} ({system.components?.length || 0} components)
+                  </Button>
+                  <Button
+                    size="icon"
                     variant="ghost"
                     onClick={() => deleteMutation.mutate(system.id)}
                     data-testid={`button-delete-${system.id}`}
                   >
-                    <Trash2 className="h-3 w-3" />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               ))}
             </div>
           </div>
+        ) : (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            No saved design systems yet. Save your current components to reuse them later.
+          </p>
         )}
       </Card>
 
