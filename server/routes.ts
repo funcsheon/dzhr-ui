@@ -99,6 +99,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/prompt-history", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const prompts = await storage.getRecentPrompts(limit);
+      res.json(prompts);
+    } catch (error) {
+      console.error('Get prompt history error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to get prompt history' 
+      });
+    }
+  });
+
+  app.post("/api/prompt-history", async (req, res) => {
+    try {
+      const { prompt } = z.object({ prompt: z.string().min(1) }).parse(req.body);
+      const savedPrompt = await storage.savePrompt({ prompt });
+      res.json(savedPrompt);
+    } catch (error) {
+      console.error('Save prompt error:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          error: 'Invalid input data',
+          details: error.errors 
+        });
+      }
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to save prompt' 
+      });
+    }
+  });
+
   app.post("/api/parse-code-file", upload.single('file'), async (req, res) => {
     try {
       if (!req.file) {
