@@ -23,7 +23,7 @@ function parseCSSFile(content: string): ParsedComponent[] {
   const components: ParsedComponent[] = [];
   
   const classPattern = /\.([a-zA-Z][a-zA-Z0-9-_]*)/g;
-  const matches = content.matchAll(classPattern);
+  const matches = Array.from(content.matchAll(classPattern));
   const classNames = new Set<string>();
   
   for (const match of matches) {
@@ -55,7 +55,7 @@ function parseJavaScriptFile(content: string): ParsedComponent[] {
   const componentNames = new Set<string>();
 
   patterns.forEach(pattern => {
-    const matches = content.matchAll(pattern);
+    const matches = Array.from(content.matchAll(pattern));
     for (const match of matches) {
       const name = match[1];
       if (name && name[0] === name[0].toUpperCase()) {

@@ -23,47 +23,99 @@ export function DesignSystemUpload({
   const [isDragging, setIsDragging] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     
-    const files = Array.from(e.dataTransfer.files).filter(file => 
-      file.type.startsWith('image/') || 
-      file.name.endsWith('.fig') || 
-      file.name.endsWith('.sketch') ||
-      file.type === 'application/json'
-    );
+    const files = Array.from(e.dataTransfer.files);
     
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const newComponent = {
-            name: file.name.replace(/\.[^/.]+$/, ""),
-            url: event.target.result as string,
-          };
-          onComponentsChange([...components, newComponent]);
+    for (const file of files) {
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      const codeExtensions = ['css', 'scss', 'less', 'js', 'jsx', 'ts', 'tsx', 'json'];
+      
+      if (codeExtensions.includes(extension || '')) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+          const response = await fetch('/api/parse-code-file', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            const newComponents = data.components.map((comp: any) => ({
+              name: comp.name,
+              url: comp.url || '',
+            }));
+            onComponentsChange([...components, ...newComponents]);
+          }
+        } catch (error) {
+          console.error('Failed to parse code file:', error);
         }
-      };
-      reader.readAsDataURL(file);
-    });
+      } else if (
+        file.type.startsWith('image/') || 
+        file.name.endsWith('.fig') || 
+        file.name.endsWith('.sketch')
+      ) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            const newComponent = {
+              name: file.name.replace(/\.[^/.]+$/, ""),
+              url: event.target.result as string,
+            };
+            onComponentsChange([...components, newComponent]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
   }, [components, onComponentsChange]);
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const newComponent = {
-            name: file.name.replace(/\.[^/.]+$/, ""),
-            url: event.target.result as string,
-          };
-          onComponentsChange([...components, newComponent]);
+    
+    for (const file of files) {
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      const codeExtensions = ['css', 'scss', 'less', 'js', 'jsx', 'ts', 'tsx', 'json'];
+      
+      if (codeExtensions.includes(extension || '')) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+          const response = await fetch('/api/parse-code-file', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            const newComponents = data.components.map((comp: any) => ({
+              name: comp.name,
+              url: comp.url || '',
+            }));
+            onComponentsChange([...components, ...newComponents]);
+          }
+        } catch (error) {
+          console.error('Failed to parse code file:', error);
         }
-      };
-      reader.readAsDataURL(file);
-    });
+      } else {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            const newComponent = {
+              name: file.name.replace(/\.[^/.]+$/, ""),
+              url: event.target.result as string,
+            };
+            onComponentsChange([...components, newComponent]);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
   };
 
   const removeComponent = (index: number) => {
@@ -98,12 +150,12 @@ export function DesignSystemUpload({
             <label className="flex flex-col items-center justify-center p-8 cursor-pointer">
               <Upload className="h-8 w-8 text-muted-foreground mb-2" />
               <span className="text-sm text-muted-foreground text-center">
-                Drop design files (.fig, .sketch) or images here
+                Drop code files (.css, .js, .ts, .tsx) or design files here
               </span>
               <input
                 type="file"
                 multiple
-                accept="image/*,.fig,.sketch,.json"
+                accept="image/*,.fig,.sketch,.json,.css,.scss,.less,.js,.jsx,.ts,.tsx"
                 className="hidden"
                 onChange={handleFileInput}
                 data-testid="input-design-system-upload"
