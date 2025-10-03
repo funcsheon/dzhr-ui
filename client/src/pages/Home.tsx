@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import { toPng } from 'html-to-image';
 import type { DesignSystem } from "@shared/schema";
-import logoImage from "@assets/Group 213_1759502696335.png";
+import logoImage from "@assets/Group 213_1759502928072.png";
 
 export default function Home() {
   const [selectedDevices, setSelectedDevices] = useState<string[]>([]);

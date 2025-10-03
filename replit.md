@@ -201,7 +201,7 @@ Preferred communication style: Simple, everyday language.
 - Proper timeout cleanup to prevent memory leaks
 
 **Branding:**
-- Custom logo integration using uploaded file (Group 213_1759502696335.png)
+- Custom logo integration using uploaded file (Group 213_1759502928072.png)
 - Purple rounded square with white "dzhr" text and sparkle decorations
 - Displays as 40x40px in application header
-- Replaces previous placeholder icon
+- Also set as browser favicon for consistent branding across tabs
