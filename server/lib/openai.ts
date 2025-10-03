@@ -1,6 +1,5 @@
 import OpenAI from "openai";
 
-// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
 function getOpenAIClient() {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY environment variable is not set. Please add your OpenAI API key to continue.');
@@ -11,7 +10,7 @@ function getOpenAIClient() {
 export async function analyzeWebsiteTemplate(url: string) {
   const openai = getOpenAIClient();
   const response = await openai.chat.completions.create({
-    model: "gpt-5",
+    model: "gpt-4o",
     messages: [
       {
         role: "system",
@@ -31,7 +30,7 @@ export async function analyzeWebsiteTemplate(url: string) {
 export async function analyzeDesignSystem(url: string) {
   const openai = getOpenAIClient();
   const response = await openai.chat.completions.create({
-    model: "gpt-5",
+    model: "gpt-4o",
     messages: [
       {
         role: "system",
@@ -98,7 +97,7 @@ CRITICAL REQUIREMENTS:
   systemContext += `\n\nReturn ONLY valid JSON: {"html": "complete HTML markup", "css": "complete CSS styles"}`;
 
   const response = await openai.chat.completions.create({
-    model: "gpt-5",
+    model: "gpt-4o",
     messages: [
       {
         role: "system",
@@ -118,7 +117,7 @@ Return JSON with format: {"html": "<div>...</div>", "css": "div { ... }"}`
       }
     ],
     response_format: { type: "json_object" },
-    max_completion_tokens: 4096,
+    max_completion_tokens: 16000,
   });
 
   const result = JSON.parse(response.choices[0].message.content || '{"html":"","css":""}');
