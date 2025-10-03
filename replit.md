@@ -130,6 +130,18 @@ Preferred communication style: Simple, everyday language.
   - **JSON**: Parses component definitions from JSON structure
   - Supports batch uploads with functional state management to preserve all components
 
+**Figma MCP Integration:**
+- **Model Context Protocol (MCP)** - Direct integration with Figma files via MCP server:
+  - Uses `@modelcontextprotocol/sdk` with `figma-developer-mcp` package
+  - StdioClientTransport spawns MCP server process via npx
+  - Authenticates using FIGMA_API_KEY environment variable
+  - **API Endpoints**:
+    - `POST /api/figma/analyze` - Extracts components and styles from Figma files
+    - `GET /api/figma/mcp-tools` - Lists available MCP tools
+  - **Response Parsing**: Handles multiple MCP payload formats (application/json, text with JSON, regex patterns)
+  - **UI Integration**: New "Figma" tab in Design System section for importing components from Figma URLs
+  - Normalizes MCP responses into clean `{name, url}[]` format for design system integration
+
 **Development Tools:**
 - **Replit-specific plugins** - Runtime error overlay, cartographer, dev banner for Replit environment
 - **TypeScript** - Static type checking with strict mode enabled

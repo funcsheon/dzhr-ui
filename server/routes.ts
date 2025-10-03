@@ -316,14 +316,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { fileKey } = schema.parse(req.body);
       
-      const [components, styles] = await Promise.all([
+      const [componentsResult, stylesResult] = await Promise.all([
         getFigmaComponents(fileKey),
         getFigmaStyles(fileKey),
       ]);
 
+      const extractedComponents: { name: string; url: string }[] = [];
+      
+      if (componentsResult && typeof componentsResult === 'object' && 'content' in componentsResult) {
+        const content = Array.isArray(componentsResult.content) 
+          ? componentsResult.content 
+          : [componentsResult.content];
+        
+        content.forEach((item: any) => {
+          let dataToProcess: any = null;
+          
+          if (item.type === 'application/json' || item.type === 'json') {
+            dataToProcess = item.json || item.data;
+          } else if (item.type === 'text' && item.text) {
+            try {
+              dataToProcess = JSON.parse(item.text);
+            } catch {
+              const componentMatches = item.text.matchAll(/(?:Component|component):\s*([^\n,]+)/g);
+              for (const match of componentMatches) {
+                extractedComponents.push({
+                  name: match[1].trim(),
+                  url: `https://figma.com/file/${fileKey}`,
+                });
+              }
+            }
+          }
+          
+          if (dataToProcess) {
+            if (Array.isArray(dataToProcess)) {
+              dataToProcess.forEach((comp: any) => {
+                if (comp.name) {
+                  extractedComponents.push({
+                    name: comp.name,
+                    url: comp.figma_url || `https://figma.com/file/${fileKey}`,
+                  });
+                }
+              });
+            } else if (dataToProcess.components && Array.isArray(dataToProcess.components)) {
+              dataToProcess.components.forEach((comp: any) => {
+                if (comp.name) {
+                  extractedComponents.push({
+                    name: comp.name,
+                    url: comp.figma_url || `https://figma.com/file/${fileKey}`,
+                  });
+                }
+              });
+            } else if (dataToProcess.name) {
+              extractedComponents.push({
+                name: dataToProcess.name,
+                url: dataToProcess.figma_url || `https://figma.com/file/${fileKey}`,
+              });
+            }
+          }
+        });
+      }
+
       res.json({
-        components,
-        styles,
+        components: extractedComponents,
+        styles: stylesResult,
       });
     } catch (error) {
       console.error('Figma MCP analysis error:', error);

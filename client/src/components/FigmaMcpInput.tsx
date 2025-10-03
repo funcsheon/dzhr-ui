@@ -46,25 +46,7 @@ export function FigmaMcpInput({ onComponentsExtracted }: FigmaMcpInputProps) {
 
       const data = await response.json();
       
-      const components: { name: string; url: string }[] = [];
-      
-      if (data.components?.content) {
-        const content = Array.isArray(data.components.content) 
-          ? data.components.content 
-          : [data.components.content];
-        
-        content.forEach((item: any) => {
-          if (item.text && typeof item.text === 'string') {
-            const componentMatches = item.text.matchAll(/Component:\s*([^\n]+)/g);
-            for (const match of componentMatches) {
-              components.push({
-                name: match[1].trim(),
-                url: figmaUrl,
-              });
-            }
-          }
-        });
-      }
+      const components = data.components || [];
 
       if (components.length === 0) {
         toast({
