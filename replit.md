@@ -1,8 +1,8 @@
-# Genius UI - AI-Powered Design Generator
+# dzhr UI - AI-Powered Design Generator
 
 ## Overview
 
-Genius UI is a professional design tool that generates responsive UI mockups from text prompts, website templates, and design systems. The application allows users to create designs for multiple device types (phone, tablet, desktop, watch, VR/AR), analyze existing websites and design systems for style extraction, and export designs as Figma files, images, or code (HTML/CSS).
+dzhr UI is a professional design tool that generates responsive UI mockups from text prompts, website templates, and design systems. The application allows users to create designs for multiple device types (phone, tablet, desktop, watch, VR/AR), analyze existing websites and design systems for style extraction, and export designs as Figma files, images, or code (HTML/CSS).
 
 The application follows a clean, professional design philosophy inspired by Linear and Figma, emphasizing workspace efficiency with a three-panel layout (controls → canvas → properties) and subdued colors that don't compete with user-generated designs.
 
@@ -82,10 +82,14 @@ Preferred communication style: Simple, everyday language.
 ### External Dependencies
 
 **AI/ML Services:**
-- **OpenAI GPT-5** - AI analysis and design generation
-  - Template analysis: Extracts design patterns, colors, typography from URLs
-  - Design system analysis: Identifies components, tokens, principles from documentation
-  - Design generation: Creates responsive HTML/CSS from prompts and constraints
+- **OpenAI GPT-4o** - Enhanced AI analysis and design generation
+  - **Advanced Prompt Engineering**: Uses role-based prompting (senior UI/UX designer), chain-of-thought reasoning, and structured constraints for higher accuracy
+  - **Temperature Control**: 0.75 for creative generation, 0.55 for precise refinement
+  - **Design Validation**: Automatic quality scoring system (0-100) checks for semantic HTML5, modern CSS, real content (no Lorem Ipsum)
+  - **Template analysis**: Extracts design patterns, colors, typography from URLs
+  - **Design system analysis**: Identifies components, tokens, principles from documentation
+  - **Design generation**: Creates responsive HTML/CSS from prompts with detailed design philosophy and quality standards
+  - **Design refinement**: Surgical improvements to existing designs while preserving structure
   - Configuration: Requires `OPENAI_API_KEY` environment variable
 
 **Web Scraping:**
@@ -146,3 +150,36 @@ Preferred communication style: Simple, everyday language.
 - **Replit-specific plugins** - Runtime error overlay, cartographer, dev banner for Replit environment
 - **TypeScript** - Static type checking with strict mode enabled
 - **ESLint & Prettier** - Code quality and formatting (implied by project structure)
+
+### Recent Improvements (Latest Session)
+
+**AI System Enhancements (99% Accuracy Goal):**
+1. **Advanced Prompt Engineering** (`server/lib/openai.ts`):
+   - Implemented role-based prompting: AI acts as senior UI/UX designer with 15+ years experience
+   - Added chain-of-thought reasoning: Step-by-step approach analyzes requirements before designing
+   - Structured constraints: Explicit design philosophy, technical requirements, quality standards
+   - Enhanced system messages with detailed design principles (clarity, whitespace, visual hierarchy)
+
+2. **Temperature Optimization**:
+   - Generation: 0.75 for creative, varied designs
+   - Refinement: 0.55 for precise, targeted improvements
+
+3. **Design Validation System**:
+   - Automatic quality scoring (0-100) with threshold of 70 for valid designs
+   - Checks for: semantic HTML5 elements, modern CSS (flexbox/grid), real content, color styling
+   - Validation results logged to console for monitoring
+
+4. **UI Improvements** (`client/src/components/PromptInput.tsx`):
+   - Added collapsible "Show Examples" section with 5 high-quality prompt templates
+   - Examples demonstrate best practices: detailed descriptions, specific features, clear structure
+   - One-click insertion of examples into prompt textarea
+
+5. **CSS Scoping Fix** (`client/src/components/DesignCanvas.tsx`):
+   - Implemented robust CSS scoping function to prevent design system styles from leaking to app UI
+   - Handles root selectors (`:root`, `html`, `body`), universal selectors, media queries
+   - dzhr UI interface remains visually consistent regardless of uploaded design systems
+   - Only generated designs in preview canvas use design system styles
+
+**Design System Integration:**
+- Removed Figma tab from Design System section (simplified to 3 tabs: Upload, Analyze, Add Links)
+- Design system components now properly scoped to generated designs only
