@@ -320,36 +320,38 @@ export default function Home() {
           <DesignCanvas designs={designs} />
         </main>
 
-        <aside className="w-96 border-l overflow-hidden flex flex-col">
-          <Tabs defaultValue="export" className="flex-1 flex flex-col">
-            <TabsList className="mx-6 mt-6">
-              <TabsTrigger value="export" className="flex-1">Export</TabsTrigger>
-              <TabsTrigger value="code" className="flex-1" disabled={!activeDesign}>
-                Code
-              </TabsTrigger>
-            </TabsList>
-            
-            <ScrollArea className="flex-1 p-6">
-              <TabsContent value="export" className="mt-0">
-                <ExportPanel
-                  onExportFigma={handleExportFigma}
-                  onExportImage={handleExportImage}
-                  onExportCode={handleExportCode}
-                  disabled={designs.length === 0}
-                />
-              </TabsContent>
+        {designs.length > 0 && (
+          <aside className="w-96 border-l overflow-hidden flex flex-col">
+            <Tabs defaultValue="export" className="flex-1 flex flex-col">
+              <TabsList className="mx-6 mt-6">
+                <TabsTrigger value="export" className="flex-1">Export</TabsTrigger>
+                <TabsTrigger value="code" className="flex-1" disabled={!activeDesign}>
+                  Code
+                </TabsTrigger>
+              </TabsList>
               
-              <TabsContent value="code" className="mt-0">
-                {activeDesign && (
-                  <CodeExport
-                    html={activeDesign.html}
-                    css={activeDesign.css}
+              <ScrollArea className="flex-1 p-6">
+                <TabsContent value="export" className="mt-0">
+                  <ExportPanel
+                    onExportFigma={handleExportFigma}
+                    onExportImage={handleExportImage}
+                    onExportCode={handleExportCode}
+                    disabled={designs.length === 0}
                   />
-                )}
-              </TabsContent>
-            </ScrollArea>
-          </Tabs>
-        </aside>
+                </TabsContent>
+                
+                <TabsContent value="code" className="mt-0">
+                  {activeDesign && (
+                    <CodeExport
+                      html={activeDesign.html}
+                      css={activeDesign.css}
+                    />
+                  )}
+                </TabsContent>
+              </ScrollArea>
+            </Tabs>
+          </aside>
+        )}
       </div>
     </div>
   );
