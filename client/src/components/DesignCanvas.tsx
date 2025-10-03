@@ -5,6 +5,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { deviceTypes } from "@shared/schema";
 import { useState } from "react";
 
+function scopeCSS(css: string): string {
+  const prefix = '.design-preview-container';
+  
+  return css
+    .replace(/([^{}]+)(\s*\{[^}]*\})/g, (match, selector, rules) => {
+      const trimmedSelector = selector.trim();
+      
+      if (trimmedSelector.startsWith('@')) {
+        return match;
+      }
+      
+      if (trimmedSelector.includes(',')) {
+        const selectors = trimmedSelector.split(',').map((s: string) => s.trim());
+        const scopedSelectors = selectors.map((s: string) => `${prefix} ${s}`).join(', ');
+        return scopedSelectors + rules;
+      }
+      
+      return `${prefix} ${trimmedSelector}${rules}`;
+    });
+}
+
 interface DesignCanvasProps {
   designs: {
     device: string;
@@ -93,11 +114,11 @@ export function DesignCanvas({ designs }: DesignCanvasProps) {
               }}
             >
               <div 
-                className="w-full h-full bg-background overflow-auto"
+                className="w-full h-full bg-background overflow-auto design-preview-container"
                 dangerouslySetInnerHTML={{ __html: activeDesign.html }}
                 data-testid="design-preview"
               />
-              <style>{activeDesign.css}</style>
+              <style>{scopeCSS(activeDesign.css)}</style>
             </Card>
           ) : (
             <div className="text-center space-y-4 max-w-md">
