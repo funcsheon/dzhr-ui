@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCallback, useState } from "react";
-import { FigmaMcpInput } from "./FigmaMcpInput";
 
 interface DesignSystemUploadProps {
   components: { name: string; url: string }[];
@@ -142,10 +141,9 @@ export function DesignSystemUpload({
       <h3 className="text-sm font-medium">Design System</h3>
       
       <Tabs defaultValue="upload" className="w-full">
-        <TabsList className="w-full grid grid-cols-4">
+        <TabsList className="w-full grid grid-cols-3">
           <TabsTrigger value="upload">Upload</TabsTrigger>
           <TabsTrigger value="url">Analyze</TabsTrigger>
-          <TabsTrigger value="figma">Figma</TabsTrigger>
           <TabsTrigger value="manual">Add Links</TabsTrigger>
         </TabsList>
         
@@ -206,12 +204,6 @@ export function DesignSystemUpload({
           <p className="text-xs text-muted-foreground">
             Provide a link to your design system documentation or component library
           </p>
-        </TabsContent>
-
-        <TabsContent value="figma" className="mt-3">
-          <FigmaMcpInput onComponentsExtracted={(newComponents: { name: string; url: string }[]) => {
-            onComponentsChange(prev => [...prev, ...newComponents]);
-          }} />
         </TabsContent>
 
         <TabsContent value="manual" className="mt-3 space-y-3">
