@@ -228,7 +228,85 @@ MANDATORY CSS ACCESSIBILITY REQUIREMENTS:
 3. Set line-height to 1.5 minimum for body text:
    body { line-height: 1.5; }
 4. Ensure paragraph spacing (margin-bottom) is at least 1.5x line-height
-5. Make touch targets at least 44px height/width (mobile) or 24px (desktop)`;
+5. Make touch targets at least 44px height/width (mobile) or 24px (desktop)
+
+MODERN WEB DESIGN PATTERNS (2024/2025):
+Draw inspiration from contemporary websites to create modern, beautiful layouts:
+
+1. LAYOUT TRENDS:
+   • Bento Grid Layouts - Asymmetric card grids with varying sizes (inspired by Apple, Arc browser)
+   • Split Screen Designs - Dramatic 50/50 divisions with contrasting content
+   • Floating Elements - Cards and components with depth using shadows and transforms
+   • Generous Whitespace - Spacious designs that breathe (Linear, Stripe approach)
+   • Asymmetric Compositions - Breaking the grid intentionally for visual interest
+   • Full-Bleed Sections - Content that stretches edge-to-edge for impact
+
+2. TYPOGRAPHY TRENDS:
+   • Bold, Oversized Headings - Hero text at 64px-96px+ for impact
+   • Tight Letter Spacing - -0.02em to -0.05em on large headings for modern feel
+   • Font Pairing - Sans-serif headlines + serif body, or vice versa
+   • Variable Fonts - Smooth weight transitions for polish
+   • Monospace Accents - Code-style fonts for tech/data elements
+   • Gradient Text - Subtle color transitions on headings (use background-clip: text)
+
+3. COLOR & VISUAL STYLE:
+   • Subtle Gradients - Soft, multi-color backgrounds (not harsh)
+   • Dark Mode First - Design with dark themes as primary consideration
+   • Accent Color System - Bold accent color against neutral palette
+   • Glassmorphism - Frosted glass effects with backdrop-filter: blur()
+   • Elevated Cards - Subtle shadows with hover lift animations
+   • Color Overlays - Tinted layers over images for text readability
+
+4. INTERACTIVE ELEMENTS:
+   • Micro-animations - Subtle scale/opacity changes on hover (transform: scale(1.02))
+   • Smooth Transitions - All state changes animated with ease-in-out
+   • Progress Indicators - Visual feedback for loading/processing states
+   • Skeleton Screens - Placeholder content while loading (not spinners)
+   • Hover Lift Effect - Cards rise on hover (transform: translateY(-4px))
+   • Focus Rings - Modern, rounded focus indicators with offset
+
+5. COMPONENT PATTERNS:
+   • Pill-Shaped Buttons - Fully rounded (border-radius: 9999px) for modern feel
+   • Ghost Buttons - Transparent background with border, fills on hover
+   • Input Groups - Combined inputs with shared borders (search + button)
+   • Badge Clusters - Small, colored labels for categorization
+   • Avatar Stacks - Overlapping circular avatars for team/users
+   • Stats Cards - Large numbers with small labels, minimal decoration
+
+6. MODERN CSS TECHNIQUES:
+   • CSS Grid with grid-template-areas - Named grid areas for clarity
+   • Flexbox Gap Property - Spacing between items (gap: 1rem)
+   • CSS Custom Properties - Variables for theming (--color-primary)
+   • Clamp() for Responsive Type - fluid typography (clamp(1rem, 2vw, 2rem))
+   • Aspect Ratio - aspect-ratio: 16/9 for media containers
+   • Container Queries - @container for component-level responsiveness (when supported)
+
+7. REFERENCE INSPIRATION (visual style, not content):
+   • Linear - Minimal, clean, generous spacing, subtle animations
+   • Stripe - Professional, clear hierarchy, excellent use of whitespace
+   • Vercel - Modern gradients, sharp typography, dark mode excellence
+   • Apple - Bento grids, bold imagery, asymmetric layouts
+   • Figma - Playful colors, clear CTAs, excellent component design
+   • Notion - Clean cards, soft shadows, intuitive information hierarchy
+
+8. LAYOUT RECIPES TO USE:
+   • Hero Section: Full-height, centered content, background image/gradient, large heading
+   • Feature Grid: 3-column grid (desktop) → 1-column (mobile), icon + heading + description
+   • Testimonial Carousel: Horizontal scroll, snap points, card-based
+   • Pricing Cards: 3 tiers, highlight middle option, clear CTAs
+   • Dashboard Stats: Bento grid, varying card sizes, data visualization
+   • Blog Layout: Featured post large, grid of smaller posts
+   • Navigation: Sticky header, blur background, minimal logo + links + CTA
+
+IMPLEMENTATION CHECKLIST:
+✓ Use modern CSS (Grid, Flexbox, Custom Properties, Clamp)
+✓ Include micro-interactions (hover states, smooth transitions)
+✓ Apply contemporary spacing (generous whitespace, consistent rhythm)
+✓ Implement modern typography (bold headings, readable body, proper scale)
+✓ Create depth with subtle shadows and layering
+✓ Design responsive-first (mobile → desktop)
+✓ Add visual interest through asymmetry or unique layouts
+✓ Ensure design feels current and polished (2024/2025 aesthetic)`;
 
   if (designSystemUrl || templateStyles || (designSystemComponents && designSystemComponents.length > 0)) {
     systemContext += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -518,7 +596,84 @@ MANDATORY CSS ACCESSIBILITY (must preserve/add if missing):
 - Base font-size: 16px minimum (body { font-size: 16px; })
 - Visible focus states: button:focus, input:focus, etc. with outline or box-shadow
 - Line-height: 1.5 minimum for body text
-- Touch targets: 44px (mobile) or 24px (desktop) minimum`;
+- Touch targets: 44px (mobile) or 24px (desktop) minimum
+
+MODERN WEB DESIGN PATTERNS (2024/2025 - apply during refinement when relevant):
+When enhancing the design, consider these contemporary approaches:
+
+1. LAYOUT ENHANCEMENTS:
+   • Bento Grid Layouts - Asymmetric card grids with varying sizes (inspired by Apple, Arc browser)
+   • Split Screen Designs - Dramatic 50/50 divisions with contrasting content
+   • Floating Elements - Cards and components with depth using shadows and transforms
+   • Generous Whitespace - Spacious designs that breathe (Linear, Stripe approach)
+   • Asymmetric Compositions - Breaking the grid intentionally for visual interest
+   • Full-Bleed Sections - Content that stretches edge-to-edge for impact
+
+2. TYPOGRAPHY IMPROVEMENTS:
+   • Bold, Oversized Headings - Hero text at 64px-96px+ for impact
+   • Tight Letter Spacing - -0.02em to -0.05em on large headings for modern feel
+   • Font Pairing - Sans-serif headlines + serif body, or vice versa
+   • Variable Fonts - Smooth weight transitions for polish
+   • Monospace Accents - Code-style fonts for tech/data elements
+   • Gradient Text - Subtle color transitions on headings (use background-clip: text)
+
+3. VISUAL POLISH:
+   • Subtle Gradients - Soft, multi-color backgrounds (not harsh)
+   • Dark Mode Consideration - Ensure refinements work in dark themes
+   • Accent Color System - Bold accent color against neutral palette
+   • Glassmorphism - Frosted glass effects with backdrop-filter: blur()
+   • Elevated Cards - Subtle shadows with hover lift animations
+   • Color Overlays - Tinted layers over images for text readability
+
+4. MICRO-INTERACTIONS:
+   • Subtle Animations - Scale/opacity changes on hover (transform: scale(1.02))
+   • Smooth Transitions - All state changes animated with ease-in-out
+   • Progress Indicators - Visual feedback for loading/processing states
+   • Skeleton Screens - Placeholder content while loading (not spinners)
+   • Hover Lift Effect - Cards rise on hover (transform: translateY(-4px))
+   • Focus Rings - Modern, rounded focus indicators with offset
+
+5. MODERN COMPONENTS:
+   • Pill-Shaped Buttons - Fully rounded (border-radius: 9999px) for modern feel
+   • Ghost Buttons - Transparent background with border, fills on hover
+   • Input Groups - Combined inputs with shared borders (search + button)
+   • Badge Clusters - Small, colored labels for categorization
+   • Avatar Stacks - Overlapping circular avatars for team/users
+   • Stats Cards - Large numbers with small labels, minimal decoration
+
+6. CSS TECHNIQUES:
+   • CSS Grid with grid-template-areas - Named grid areas for clarity
+   • Flexbox Gap Property - Spacing between items (gap: 1rem)
+   • CSS Custom Properties - Variables for theming (--color-primary)
+   • Clamp() for Responsive Type - fluid typography (clamp(1rem, 2vw, 2rem))
+   • Aspect Ratio - aspect-ratio: 16/9 for media containers
+   • Modern Selectors - :has(), :is(), :where() for cleaner CSS
+
+7. REFERENCE INSPIRATION (visual style approach, not content):
+   • Linear - Minimal, clean, generous spacing, subtle animations
+   • Stripe - Professional, clear hierarchy, excellent use of whitespace
+   • Vercel - Modern gradients, sharp typography, dark mode excellence
+   • Apple - Bento grids, bold imagery, asymmetric layouts
+   • Figma - Playful colors, clear CTAs, excellent component design
+   • Notion - Clean cards, soft shadows, intuitive information hierarchy
+
+8. LAYOUT RECIPES (when adding new sections):
+   • Hero Section: Full-height, centered content, background image/gradient, large heading
+   • Feature Grid: 3-column grid (desktop) → 1-column (mobile), icon + heading + description
+   • Testimonial Carousel: Horizontal scroll, snap points, card-based
+   • Pricing Cards: 3 tiers, highlight middle option, clear CTAs
+   • Dashboard Stats: Bento grid, varying card sizes, data visualization
+   • Blog Layout: Featured post large, grid of smaller posts
+   • Navigation: Sticky header, blur background, minimal logo + links + CTA
+
+MODERN DESIGN IMPLEMENTATION (during refinement):
+✓ Apply modern CSS where appropriate (Grid, Flexbox, Custom Properties, Clamp)
+✓ Add micro-interactions if refinement calls for it (hover states, smooth transitions)
+✓ Consider contemporary spacing patterns (generous whitespace, consistent rhythm)
+✓ Enhance typography if requested (bold headings, readable body, proper scale)
+✓ Add depth with subtle shadows and layering where fitting
+✓ Ensure refinements feel current and polished (2024/2025 aesthetic)
+✓ Always maintain existing design language while applying modern enhancements`;
 
   if (designSystemUrl || templateStyles || (designSystemComponents && designSystemComponents.length > 0)) {
     systemContext += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

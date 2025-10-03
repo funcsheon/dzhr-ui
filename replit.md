@@ -40,6 +40,7 @@ Preferred communication style: Simple, everyday language.
 ### Technical Implementations
 - **AI Integration:** Advanced prompt engineering using GPT-4o (role-based, chain-of-thought, structured constraints), context-aware temperature optimization, and a design validation system (0-100 score).
 - **Design System Compliance:** Critical enforcement mechanisms for 95%+ design system adherence, including structured token extraction, component pattern matching, and verification checklists. Enforces "zero arbitrary values" for colors, sizes, and spacing.
+- **Modern Design Pattern Training:** AI trained on 2024/2025 web design trends including bento grids, glassmorphism, bold typography (64px-96px headings), modern CSS techniques (clamp, grid-template-areas), and contemporary design inspiration from Linear, Stripe, Vercel, Apple, and Figma. Includes layout recipes, micro-interactions, and implementation checklists for modern, polished designs.
 - **CSS Scoping:** Robust CSS scoping function to prevent generated design styles from affecting the main application UI.
 - **Image Generation:** AI-generated designs include real images from Picsum Photos, complete with accessible alt text.
 
