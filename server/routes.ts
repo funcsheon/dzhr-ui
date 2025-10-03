@@ -353,7 +353,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', `attachment; filename="${data.projectName}.fig.json"`);
+      res.setHeader('Content-Disposition', `attachment; filename="${data.projectName}.fig"`);
       res.json(figmaData);
     } catch (error) {
       console.error('Figma export error:', error);

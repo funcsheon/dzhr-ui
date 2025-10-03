@@ -276,7 +276,7 @@ export default function Home() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${prompt.slice(0, 30) || 'design'}.fig.json`;
+      a.download = `${prompt.slice(0, 30) || 'design'}.fig`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -424,11 +424,12 @@ export default function Home() {
                 />
               </TabsContent>
               
-              <TabsContent value="code" className="mt-0">
+              <TabsContent value="code" className="mt-0 flex-1">
                 {activeDesign ? (
                   <CodeExport
                     html={activeDesign.html}
                     css={activeDesign.css}
+                    device={activeDesign.device}
                   />
                 ) : (
                   <div className="text-sm text-muted-foreground text-center py-8">
