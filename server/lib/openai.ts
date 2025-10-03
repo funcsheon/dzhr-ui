@@ -464,16 +464,94 @@ VISUAL CONSISTENCY REQUIREMENTS:
 ⚠️  Your design should look like it was built BY the design system team, including any components you create to fill gaps.`;
   }
 
-  systemContext += `\n\nIMAGE REQUIREMENTS:
+  systemContext += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  CRITICAL: CONTEXTUAL CONTENT GENERATION (MANDATORY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ALL content MUST be contextually relevant to the design brief. Generic or placeholder content is UNACCEPTABLE.
+
+CONTENT CONTEXTUALIZATION RULES:
+
+1. ANALYZE THE DESIGN BRIEF CONTEXT:
+   - Identify the industry/domain (e.g., fitness app, e-commerce, dashboard, blog, portfolio)
+   - Extract key themes and terminology from the prompt
+   - Understand the target audience and use case
+   - Note specific features or components mentioned
+
+2. LABELS & TEXT CONTENT:
+   - Button text: Use action verbs relevant to the context
+     * Fitness app: "Start Workout", "Track Progress", "Join Challenge"
+     * E-commerce: "Add to Cart", "Checkout", "View Details"
+     * Dashboard: "View Analytics", "Export Data", "Configure Settings"
+   - Headings: Reflect the prompt's purpose
+     * Landing page for SaaS: "Transform Your Workflow", "Boost Productivity"
+     * Portfolio: "Featured Projects", "Creative Work", "Case Studies"
+   - Form labels: Match the data being collected
+     * Fitness: "Weight (kg)", "Workout Type", "Duration (minutes)"
+     * Contact form: "Your Email", "Subject", "Message"
+   - Descriptions & body text: Write realistic, contextual copy
+     * Don't use "Lorem ipsum" or generic "This is a description"
+     * Write actual relevant text that matches the context
+
+3. IMAGE ALT TEXT (CRITICAL FOR ACCESSIBILITY):
+   - NEVER use generic alt text like "Hero image", "Product", "User avatar"
+   - ALWAYS describe images in context of the prompt:
+     * Fitness app hero: alt="Person doing yoga exercise outdoors at sunrise"
+     * E-commerce product: alt="Premium wireless headphones in matte black finish"
+     * Team page avatar: alt="Sarah Johnson, Lead Designer"
+     * Dashboard chart: alt="Monthly revenue growth chart showing 23% increase"
+   - Be specific and descriptive (helps screen readers and SEO)
+
+4. COMPONENT NAMING & IDs:
+   - Use semantic, contextual names for IDs and classes
+     * Fitness app: id="workout-modal", class="exercise-card"
+     * E-commerce: id="product-gallery", class="price-tag"
+     * Dashboard: id="analytics-panel", class="metric-card"
+   - Avoid generic names like "modal-1", "card-2", "section-3"
+
+5. DATA & EXAMPLES:
+   - Use realistic example data that matches the context
+     * Fitness: "5K Morning Run - 32:45", "Chest & Triceps - 45 min"
+     * E-commerce: "Premium Wireless Earbuds - $129.99", "In Stock: 47 units"
+     * Dashboard: "Revenue: $48,392", "Active Users: 2,847"
+   - Numbers should be realistic and contextually appropriate
+
+6. ARIA LABELS:
+   - Make ARIA labels contextually descriptive
+     * aria-label="Open workout settings menu" (not "Open menu")
+     * aria-label="Filter products by price range" (not "Filter")
+     * aria-describedby should point to contextually relevant help text
+
+IMAGE REQUIREMENTS:
 When the design needs images (hero images, product photos, avatars, illustrations):
 - Use Picsum Photos service: https://picsum.photos/[width]/[height]
-- Example hero image: <img src="https://picsum.photos/1200/600" alt="Hero image">
-- Example product: <img src="https://picsum.photos/400/400" alt="Product">
-- Example avatar: <img src="https://picsum.photos/100/100" alt="User avatar">
 - Add ?random=[number] to get different images: https://picsum.photos/400/400?random=1
-- Always include descriptive alt text for accessibility
-- Set proper width/height in the URL to match your design needs
 - For multiple different images, use different random numbers (e.g., ?random=1, ?random=2, ?random=3)
+- Set proper width/height in the URL to match your design needs
+
+MANDATORY: Image alt text MUST be contextually specific:
+✓ GOOD: <img src="https://picsum.photos/1200/600?random=1" alt="Athletic woman stretching before morning workout in modern gym">
+✓ GOOD: <img src="https://picsum.photos/400/400?random=2" alt="Ergonomic office chair in charcoal gray with lumbar support">
+✓ GOOD: <img src="https://picsum.photos/100/100?random=3" alt="Michael Chen, Senior Product Manager, profile photo">
+
+✗ BAD: <img src="https://picsum.photos/1200/600" alt="Hero image">
+✗ BAD: <img src="https://picsum.photos/400/400" alt="Product">
+✗ BAD: <img src="https://picsum.photos/100/100" alt="User avatar">
+
+CONTENT QUALITY VERIFICATION CHECKLIST:
+Before submitting, verify:
+✓ ALL button text uses contextually relevant action verbs
+✓ ALL headings reflect the actual purpose from the prompt
+✓ ALL image alt text describes the image in context (no generic "image", "photo", "picture")
+✓ ALL form labels match the data being collected
+✓ ALL descriptions contain realistic, relevant copy (no Lorem Ipsum, no generic text)
+✓ ALL IDs and class names are semantically meaningful
+✓ ALL example data/numbers are contextually appropriate
+✓ ALL ARIA labels are specifically descriptive
+
+⚠️  FINAL CHECK: Read through your HTML and ask "Does this content make sense for a [prompt context]?"
+If the answer is no, or if you see ANY generic/placeholder text, FIX IT before submitting.
+Contextual content is MANDATORY, not optional.
 
 OUTPUT FORMAT:
 Return ONLY valid JSON with this exact structure: {"html": "complete HTML markup", "css": "complete CSS styles"}
@@ -495,19 +573,31 @@ No explanations, no markdown, just pure JSON.`;
         content: `DESIGN BRIEF: ${prompt}
 
 STEP-BY-STEP APPROACH:
-1. First, analyze the design requirements and identify the key user goals
-2. Plan the information architecture and content hierarchy
-3. Choose an appropriate layout structure for ${device.name}
-4. Select a cohesive color scheme with proper contrast ratios
-5. Design the interface with attention to typography, spacing, and visual flow
-6. Add polish through subtle shadows, borders, and transitions
+1. ANALYZE the design brief to extract context, industry, and key themes
+2. IDENTIFY the target audience and primary use cases
+3. DETERMINE what components are needed (analyze if design system covers them)
+4. PLAN information architecture and content hierarchy based on prompt context
+5. CHOOSE appropriate layout structure for ${device.name}
+6. SELECT cohesive color scheme with proper contrast ratios
+7. DESIGN the interface with contextually relevant content throughout
+8. ADD polish through subtle shadows, borders, and transitions
+
+COMPONENT ANALYSIS (CRITICAL):
+Before designing, analyze what components are needed vs. what's provided:
+1. List all UI components required by the design brief (buttons, modals, cards, forms, etc.)
+2. Check which components are in the design system (if provided)
+3. For missing components:
+   - Extract visual patterns from existing components (border radius, shadows, spacing, colors)
+   - Create matching components that look native to the design system
+   - Ensure all components are accessible (WCAG 2.1 AA) and modern (2024/2025 patterns)
+4. Name components semantically based on the prompt context
 
 DELIVERABLES:
 Create a stunning, professional ${device.name} interface featuring:
 - Complete HTML structure (semantic elements: header, nav, main, sections, footer as appropriate)
 - Beautiful, modern CSS with thoughtful typography and spacing
-- Real, contextually appropriate content (no Lorem Ipsum - use actual relevant text)
-- High-quality placeholder images (hero images, product photos, avatars as needed)
+- CONTEXTUALLY APPROPRIATE CONTENT throughout (labels, headings, descriptions match the prompt)
+- High-quality placeholder images with SPECIFIC, CONTEXTUAL alt text (never generic)
 - Professional color scheme with intentional color choices
 - Hover states and interactive element styling
 - Polished details (shadows, borders, transitions)
@@ -793,15 +883,54 @@ REFINEMENT RULES:
 - Refined components should still feel native to the design system`;
   }
 
-  systemContext += `\n\nIMAGE REQUIREMENTS:
+  systemContext += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  CRITICAL: CONTEXTUAL CONTENT DURING REFINEMENT (MANDATORY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+When refining the design, ensure ALL content remains contextually relevant:
+
+1. PRESERVE CONTEXT:
+   - Maintain the original design's contextual theme and terminology
+   - Keep labels, headings, and descriptions contextually appropriate
+   - Ensure refined elements match the existing context
+
+2. ENHANCE CONTEXTUAL CONTENT (if adding new elements):
+   - New labels must match the design's context (e.g., fitness app → workout-related terms)
+   - New headings reflect the design's purpose
+   - New form fields use contextually appropriate labels
+   - New text content is relevant and realistic (no generic placeholder text)
+
+3. IMAGE ALT TEXT (CRITICAL):
+   - NEVER use generic alt text like "Hero image", "Product", "User avatar"
+   - ALWAYS make alt text contextually specific:
+     ✓ GOOD: alt="Person doing yoga exercise outdoors at sunrise"
+     ✗ BAD: alt="Hero image"
+   - When modifying existing images, update alt text to be more descriptive
+   - When adding new images, ensure alt text matches the design context
+
+4. ARIA LABELS & ACCESSIBILITY:
+   - Preserve or enhance contextually descriptive ARIA labels
+   - aria-label should be specific: "Open workout settings menu" not "Open menu"
+   - Maintain or improve semantic naming (IDs, classes)
+
+IMAGE REQUIREMENTS:
 When adding or modifying images in the refined design:
 - Use Picsum Photos service: https://picsum.photos/[width]/[height]
-- Example hero image: <img src="https://picsum.photos/1200/600" alt="Hero image">
-- Example product: <img src="https://picsum.photos/400/400" alt="Product">
-- Example avatar: <img src="https://picsum.photos/100/100" alt="User avatar">
 - Add ?random=[number] to get different images: https://picsum.photos/400/400?random=1
-- Always include descriptive alt text for accessibility
 - Set proper width/height in the URL to match your design needs
+
+MANDATORY: Image alt text MUST be contextually specific:
+✓ GOOD: <img src="https://picsum.photos/1200/600?random=1" alt="Athletic woman stretching before morning workout in modern gym">
+✗ BAD: <img src="https://picsum.photos/1200/600" alt="Hero image">
+
+CONTENT VERIFICATION (before submitting refined design):
+✓ ALL button text uses contextually relevant action verbs
+✓ ALL headings reflect the actual purpose and context
+✓ ALL image alt text describes images in context (no generic terms)
+✓ ALL new form labels match the data being collected
+✓ ALL descriptions contain realistic, relevant copy (no Lorem Ipsum)
+✓ ALL ARIA labels are specifically descriptive
+✓ Component naming remains semantically meaningful
 - For multiple different images, use different random numbers (e.g., ?random=1, ?random=2, ?random=3)
 
 OUTPUT FORMAT:
