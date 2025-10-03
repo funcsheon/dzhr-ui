@@ -8,22 +8,60 @@ import { useState } from "react";
 function scopeCSS(css: string): string {
   const prefix = '.design-preview-container';
   
-  return css
-    .replace(/([^{}]+)(\s*\{[^}]*\})/g, (match, selector, rules) => {
-      const trimmedSelector = selector.trim();
-      
-      if (trimmedSelector.startsWith('@')) {
-        return match;
+  const scopeSelector = (selector: string): string => {
+    const trimmed = selector.trim();
+    
+    if (trimmed === ':root' || trimmed === 'html' || trimmed === 'body') {
+      return prefix;
+    }
+    
+    if (trimmed === '*') {
+      return `${prefix} *`;
+    }
+    
+    if (trimmed.startsWith(':root')) {
+      return prefix + trimmed.substring(5);
+    }
+    
+    if (trimmed.startsWith('html') && (trimmed.length === 4 || !trimmed[4].match(/[a-zA-Z0-9_-]/))) {
+      return prefix + trimmed.substring(4);
+    }
+    
+    if (trimmed.startsWith('body') && (trimmed.length === 4 || !trimmed[4].match(/[a-zA-Z0-9_-]/))) {
+      return prefix + trimmed.substring(4);
+    }
+    
+    return `${prefix} ${trimmed}`;
+  };
+  
+  return css.replace(/([^{}]+)(\s*\{[^}]*\})/g, (match, selector, rules) => {
+    const trimmedSelector = selector.trim();
+    
+    if (trimmedSelector.startsWith('@keyframes') || trimmedSelector.startsWith('@-webkit-keyframes')) {
+      return match;
+    }
+    
+    if (trimmedSelector.startsWith('@media') || trimmedSelector.startsWith('@supports') || trimmedSelector.startsWith('@container')) {
+      const atRuleMatch = trimmedSelector.match(/^(@[^{]+)/);
+      if (atRuleMatch) {
+        const innerCSS = rules.slice(1, -1);
+        return atRuleMatch[1] + ' {' + scopeCSS(innerCSS) + '}';
       }
-      
-      if (trimmedSelector.includes(',')) {
-        const selectors = trimmedSelector.split(',').map((s: string) => s.trim());
-        const scopedSelectors = selectors.map((s: string) => `${prefix} ${s}`).join(', ');
-        return scopedSelectors + rules;
-      }
-      
-      return `${prefix} ${trimmedSelector}${rules}`;
-    });
+      return match;
+    }
+    
+    if (trimmedSelector.startsWith('@')) {
+      return match;
+    }
+    
+    if (trimmedSelector.includes(',')) {
+      const selectors = trimmedSelector.split(',').map((s: string) => s.trim());
+      const scopedSelectors = selectors.map((s: string) => scopeSelector(s)).join(', ');
+      return scopedSelectors + rules;
+    }
+    
+    return scopeSelector(trimmedSelector) + rules;
+  });
 }
 
 interface DesignCanvasProps {
