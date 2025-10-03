@@ -1,7 +1,8 @@
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, RefreshCw, Lightbulb } from "lucide-react";
+import { Sparkles, Loader2, RefreshCw, Lightbulb, Globe, LayoutDashboard, UtensilsCrossed, Camera, Smartphone } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
 interface PromptInputProps {
@@ -26,11 +27,36 @@ export function PromptInput({
   const [showExamples, setShowExamples] = useState(false);
 
   const examplePrompts = [
-    "Create a modern landing page for an eco-friendly fashion brand with a hero section showcasing sustainable materials, a product grid, customer testimonials, and newsletter signup",
-    "Design a SaaS dashboard for analytics with sidebar navigation, data visualization charts, KPI cards, and a user profile menu in the header",
-    "Build a restaurant website with mouth-watering food imagery, menu sections, online reservation form, location map, and customer reviews",
-    "Create a portfolio website for a photographer with full-width image gallery, project case studies, about section, and contact form",
-    "Design a mobile app landing page for a fitness tracker with feature highlights, app screenshots, pricing tiers, and download buttons"
+    {
+      icon: Globe,
+      category: "E-commerce",
+      title: "Fashion Brand",
+      prompt: "Create a modern landing page for an eco-friendly fashion brand with a hero section showcasing sustainable materials, a product grid, customer testimonials, and newsletter signup"
+    },
+    {
+      icon: LayoutDashboard,
+      category: "SaaS",
+      title: "Analytics Dashboard",
+      prompt: "Design a SaaS dashboard for analytics with sidebar navigation, data visualization charts, KPI cards, and a user profile menu in the header"
+    },
+    {
+      icon: UtensilsCrossed,
+      category: "Restaurant",
+      title: "Food Website",
+      prompt: "Build a restaurant website with mouth-watering food imagery, menu sections, online reservation form, location map, and customer reviews"
+    },
+    {
+      icon: Camera,
+      category: "Portfolio",
+      title: "Photography",
+      prompt: "Create a portfolio website for a photographer with full-width image gallery, project case studies, about section, and contact form"
+    },
+    {
+      icon: Smartphone,
+      category: "Mobile App",
+      title: "Fitness Tracker",
+      prompt: "Design a mobile app landing page for a fitness tracker with feature highlights, app screenshots, pricing tiers, and download buttons"
+    }
   ];
 
   return (
@@ -49,18 +75,38 @@ export function PromptInput({
               {showExamples ? 'Hide' : 'Show'} Examples
             </Button>
           </CollapsibleTrigger>
-          <CollapsibleContent className="mt-2 space-y-2">
-            <p className="text-xs text-muted-foreground">Click any example to use it:</p>
-            {examplePrompts.map((example, index) => (
-              <button
-                key={index}
-                onClick={() => onPromptChange(example)}
-                className="w-full text-left text-xs p-2 rounded border border-border hover-elevate active-elevate-2 bg-muted/30 transition-colors"
-                data-testid={`button-example-${index}`}
-              >
-                {example}
-              </button>
-            ))}
+          <CollapsibleContent className="mt-3 space-y-2">
+            <p className="text-xs text-muted-foreground mb-3">Choose a template to get started:</p>
+            <div className="grid gap-2">
+              {examplePrompts.map((example, index) => {
+                const Icon = example.icon;
+                return (
+                  <button
+                    key={index}
+                    onClick={() => onPromptChange(example.prompt)}
+                    className="w-full text-left p-3 rounded-md border hover-elevate active-elevate-2 transition-all group"
+                    data-testid={`button-example-${index}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="rounded-md bg-primary/10 p-2 group-hover:bg-primary/20 transition-colors">
+                        <Icon className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-sm font-medium">{example.title}</p>
+                          <Badge variant="secondary" className="text-xs no-default-hover-elevate no-default-active-elevate">
+                            {example.category}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {example.prompt}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </CollapsibleContent>
         </Collapsible>
       </div>
