@@ -8,11 +8,10 @@ import { Card } from "@/components/ui/card";
 interface ExportPanelProps {
   onExportFigma: () => void;
   onExportImage: () => void;
-  onExportCode: () => void;
   disabled?: boolean;
 }
 
-export function ExportPanel({ onExportFigma, onExportImage, onExportCode, disabled }: ExportPanelProps) {
+export function ExportPanel({ onExportFigma, onExportImage, disabled }: ExportPanelProps) {
   const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
   const { toast } = useToast();
 
@@ -30,13 +29,6 @@ export function ExportPanel({ onExportFigma, onExportImage, onExportCode, disabl
       description: "PNG/SVG for presentations",
       icon: ImageIcon,
       handler: onExportImage,
-    },
-    {
-      id: "code",
-      label: "Source Code",
-      description: "HTML/CSS for development",
-      icon: FileCode,
-      handler: onExportCode,
     },
   ];
 
