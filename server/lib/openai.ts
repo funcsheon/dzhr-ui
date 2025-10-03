@@ -230,26 +230,100 @@ MANDATORY CSS ACCESSIBILITY REQUIREMENTS:
 4. Ensure paragraph spacing (margin-bottom) is at least 1.5x line-height
 5. Make touch targets at least 44px height/width (mobile) or 24px (desktop)`;
 
+  if (designSystemUrl || templateStyles || (designSystemComponents && designSystemComponents.length > 0)) {
+    systemContext += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  CRITICAL: DESIGN SYSTEM COMPLIANCE REQUIRED (95%+ ACCURACY MANDATORY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This project has a DEFINED DESIGN SYSTEM. You MUST achieve 95%+ accuracy in following it.
+Failure to comply with these guidelines is NOT acceptable.`;
+  }
+
   if (designSystemUrl) {
-    systemContext += `\n\nDESIGN SYSTEM CONSTRAINTS:
-Follow the design system guidelines at: ${designSystemUrl}
-- Match component patterns and naming conventions
-- Use the system's established visual language
-- Maintain consistency with existing design tokens`;
+    systemContext += `\n\nDESIGN SYSTEM SOURCE: ${designSystemUrl}
+
+MANDATORY COMPLIANCE STEPS:
+1. ANALYZE the design system thoroughly before designing
+2. EXTRACT exact specifications:
+   - Color tokens (primary, secondary, accent, neutral scales)
+   - Typography scale (font families, sizes, weights, line heights)
+   - Spacing scale (margin/padding values, grid system)
+   - Border radius values (small, medium, large, full)
+   - Shadow/elevation system (if present)
+   - Component patterns and variants
+3. REPLICATE the visual language exactly:
+   - Match button styles (padding, border, radius, hover states)
+   - Match input field styles (border, focus states, sizing)
+   - Match card/container styles (background, borders, shadows)
+   - Match heading styles (sizes, weights, letter spacing)
+   - Match color usage patterns (when to use primary vs secondary)
+4. MAINTAIN design system naming conventions
+5. USE design system spacing values exclusively (no arbitrary values)
+
+VERIFICATION BEFORE SUBMITTING:
+✓ Every color used exists in the design system palette
+✓ Every font size matches the design system typography scale
+✓ Every spacing value follows the design system spacing scale
+✓ Component styles match design system component patterns
+✓ No arbitrary values that deviate from the design system`;
   }
 
   if (templateStyles) {
-    systemContext += `\n\nSTYLE REQUIREMENTS (must follow exactly):
-- Color Palette: ${templateStyles.colors?.join(', ')} (use these as primary palette)
-- Typography: ${templateStyles.fonts?.join(', ')} (use these font families)
-- Spacing System: ${templateStyles.spacing?.join(', ')} (maintain consistent spacing)
-- Layout Patterns: ${templateStyles.layouts?.join(', ')} (follow these layout approaches)`;
+    systemContext += `\n\nEXTRACTED DESIGN TOKENS (MUST USE EXACTLY):
+
+COLOR PALETTE (use ONLY these colors):
+${templateStyles.colors?.map((color, i) => `- Color ${i + 1}: ${color}`).join('\n')}
+→ Primary actions: Use the first color
+→ Secondary elements: Use complementary colors from the palette
+→ Text colors: Derive from palette with proper contrast (4.5:1+)
+→ Backgrounds: Use lightest/darkest values from palette
+
+TYPOGRAPHY SYSTEM (use ONLY these fonts):
+${templateStyles.fonts?.map((font, i) => `- Font ${i + 1}: ${font}`).join('\n')}
+→ Headings: Use the primary font (first in list)
+→ Body text: Use the primary or secondary font
+→ Code/monospace: Use monospace font if available
+
+SPACING SCALE (use ONLY these values):
+${templateStyles.spacing?.map((space, i) => `- Spacing level ${i + 1}: ${space}`).join('\n')}
+→ Apply consistently: margins, padding, gaps
+→ Larger spacing for sections, smaller for inline elements
+→ Never use arbitrary spacing values (e.g., random px values)
+
+LAYOUT PATTERNS (follow these approaches):
+${templateStyles.layouts?.map((layout, i) => `- Pattern ${i + 1}: ${layout}`).join('\n')}
+→ Use specified layout method (Grid, Flexbox, etc.)
+→ Match the structural patterns from the design system
+
+⚠️  CRITICAL: Any deviation from these exact values is a FAILURE.`;
   }
 
   if (designSystemComponents && designSystemComponents.length > 0) {
-    systemContext += `\n\nCOMPONENT LIBRARY:
-Incorporate and reference these design system components: ${designSystemComponents.map(c => c.name).join(', ')}
-Design components that feel native to this system.`;
+    systemContext += `\n\nCOMPONENT LIBRARY (reference these components):
+${designSystemComponents.map((c, i) => `${i + 1}. ${c.name}${c.url ? ` (${c.url})` : ''}`).join('\n')}
+
+COMPONENT USAGE RULES:
+1. Design NEW components that visually match the EXISTING components listed above
+2. Analyze the component list to understand the design system's visual style:
+   - If you see "Material Button" → use Material Design principles
+   - If you see "Shadcn Card" → use Shadcn styling patterns
+   - If you see company-specific components → match their brand style
+3. Extract patterns from component names:
+   - Button variants (primary, secondary, outline, ghost)
+   - Component sizing (sm, md, lg)
+   - Component states (hover, active, disabled)
+4. Create components that feel NATIVE to this design system
+5. Match the naming conventions and structure patterns
+
+VISUAL CONSISTENCY REQUIREMENTS:
+✓ Button styles match the design system's button component patterns
+✓ Card/container styles match the design system's card patterns
+✓ Input styles match the design system's form component patterns
+✓ Typography hierarchy matches the design system's text components
+✓ Color application matches the design system's color usage
+✓ Spacing patterns match the design system's layout components
+
+⚠️  Your design should look like it was built BY the design system team.`;
   }
 
   systemContext += `\n\nIMAGE REQUIREMENTS:
@@ -266,6 +340,10 @@ When the design needs images (hero images, product photos, avatars, illustration
 OUTPUT FORMAT:
 Return ONLY valid JSON with this exact structure: {"html": "complete HTML markup", "css": "complete CSS styles"}
 No explanations, no markdown, just pure JSON.`;
+
+  // Lower temperature for better design system compliance when constraints are provided
+  const hasDesignSystemConstraints = !!(designSystemUrl || templateStyles || (designSystemComponents && designSystemComponents.length > 0));
+  const temperature = hasDesignSystemConstraints ? 0.65 : 0.75;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -316,12 +394,29 @@ ACCESSIBILITY CHECKLIST (VERIFY ALL BEFORE SUBMITTING):
 ✓ ARIA landmarks for page regions (role attributes or semantic tags)
 ✓ Keyboard navigation fully functional (tab order, enter/space work)
 
+${designSystemUrl || templateStyles || (designSystemComponents && designSystemComponents.length > 0) ? `
+DESIGN SYSTEM COMPLIANCE CHECKLIST (95%+ ACCURACY REQUIRED):
+✓ ALL colors are from the design system palette (no random colors)
+✓ ALL font sizes match the design system typography scale (no arbitrary sizes)
+✓ ALL spacing values follow the design system spacing scale (no random margins/padding)
+✓ Button styles exactly match design system button patterns (padding, border, radius, colors)
+✓ Input/form styles exactly match design system form component patterns
+✓ Card/container styles exactly match design system container patterns
+✓ Component naming follows design system conventions
+✓ Visual hierarchy matches design system principles
+✓ Color application (primary/secondary/accent) follows design system usage patterns
+✓ Layout structure follows design system grid/spacing system
+
+⚠️  FINAL VERIFICATION: Review your design against the design system.
+If ANY element deviates from the design system specifications, FIX IT before submitting.
+Design system compliance is MANDATORY, not optional.
+` : ''}
 Return JSON: {"html": "<your complete HTML>", "css": "your complete CSS"}`
       }
     ],
     response_format: { type: "json_object" },
     max_completion_tokens: 16000,
-    temperature: 0.75,
+    temperature: temperature,
   });
 
   const result = JSON.parse(response.choices[0].message.content || '{"html":"","css":""}');
@@ -425,23 +520,62 @@ MANDATORY CSS ACCESSIBILITY (must preserve/add if missing):
 - Line-height: 1.5 minimum for body text
 - Touch targets: 44px (mobile) or 24px (desktop) minimum`;
 
+  if (designSystemUrl || templateStyles || (designSystemComponents && designSystemComponents.length > 0)) {
+    systemContext += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  CRITICAL: DESIGN SYSTEM COMPLIANCE REQUIRED (95%+ ACCURACY MANDATORY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This project has a DEFINED DESIGN SYSTEM. Refinements MUST maintain 95%+ accuracy.
+DO NOT introduce arbitrary values or deviate from the design system.`;
+  }
+
   if (designSystemUrl) {
-    systemContext += `\n\nDESIGN SYSTEM CONSTRAINTS:
-Continue following the design system at: ${designSystemUrl}
-Ensure refinements stay consistent with the system's guidelines.`;
+    systemContext += `\n\nDESIGN SYSTEM SOURCE: ${designSystemUrl}
+
+REFINEMENT CONSTRAINTS (MAINTAIN STRICTLY):
+- Preserve exact design system color tokens
+- Preserve design system typography scale
+- Preserve design system spacing values
+- Preserve design system component patterns
+- Only modify what the user explicitly requests
+- NEVER introduce non-design-system values during refinement
+
+VERIFICATION:
+✓ Refined design still uses only design system colors
+✓ Refined design still uses only design system font sizes
+✓ Refined design still uses only design system spacing values
+✓ Component styles still match design system patterns`;
   }
 
   if (templateStyles) {
-    systemContext += `\n\nSTYLE REQUIREMENTS (maintain consistency):
-- Color Palette: ${templateStyles.colors?.join(', ')}
-- Typography: ${templateStyles.fonts?.join(', ')}
-- Spacing System: ${templateStyles.spacing?.join(', ')}
-- Layout Patterns: ${templateStyles.layouts?.join(', ')}`;
+    systemContext += `\n\nDESIGN TOKENS (MUST PRESERVE EXACTLY):
+
+COLOR PALETTE (use ONLY these):
+${templateStyles.colors?.map((color, i) => `- ${color}`).join('\n')}
+⚠️  During refinement: ONLY use colors from this palette
+
+TYPOGRAPHY (use ONLY these):
+${templateStyles.fonts?.map((font, i) => `- ${font}`).join('\n')}
+⚠️  During refinement: ONLY use fonts from this list
+
+SPACING (use ONLY these):
+${templateStyles.spacing?.map((space, i) => `- ${space}`).join('\n')}
+⚠️  During refinement: ONLY use spacing values from this scale
+
+LAYOUTS (maintain these):
+${templateStyles.layouts?.map((layout, i) => `- ${layout}`).join('\n')}
+⚠️  During refinement: Preserve layout patterns`;
   }
 
   if (designSystemComponents && designSystemComponents.length > 0) {
     systemContext += `\n\nCOMPONENT LIBRARY:
-Stay aligned with these components: ${designSystemComponents.map(c => c.name).join(', ')}`;
+${designSystemComponents.map((c, i) => `${i + 1}. ${c.name}`).join('\n')}
+
+REFINEMENT RULES:
+- Preserve visual consistency with these components
+- Maintain design system's component styling patterns
+- Do NOT introduce styles that conflict with the design system
+- Refined components should still feel native to the design system`;
   }
 
   systemContext += `\n\nIMAGE REQUIREMENTS:
@@ -458,6 +592,10 @@ When adding or modifying images in the refined design:
 OUTPUT FORMAT:
 Return ONLY valid JSON: {"html": "refined HTML markup", "css": "refined CSS styles"}
 No explanations, just pure JSON.`;
+
+  // Lower temperature for better precision when design systems are provided
+  const hasDesignSystemConstraints = !!(designSystemUrl || templateStyles || (designSystemComponents && designSystemComponents.length > 0));
+  const temperature = hasDesignSystemConstraints ? 0.5 : 0.55;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -502,12 +640,24 @@ QUALITY CHECKS:
 ✓ WCAG 2.1 AA compliance maintained (contrast, semantics, keyboard access, labels)
 ✓ Accessibility features not degraded during refinement
 
+${designSystemUrl || templateStyles || (designSystemComponents && designSystemComponents.length > 0) ? `
+DESIGN SYSTEM COMPLIANCE (95%+ ACCURACY REQUIRED):
+✓ NO arbitrary colors introduced - all colors from design system palette
+✓ NO arbitrary font sizes - all sizes from design system typography scale
+✓ NO arbitrary spacing - all margins/padding from design system spacing scale
+✓ Component patterns preserved and still match design system
+✓ Visual language remains consistent with design system
+✓ Refinements enhance design WITHOUT breaking design system compliance
+
+⚠️  CRITICAL: Verify the refined design against design system specifications.
+If you introduced ANY values not in the design system, REMOVE them and use correct values.
+` : ''}
 Return JSON: {"html": "<refined complete HTML>", "css": "refined complete CSS"}`
       }
     ],
     response_format: { type: "json_object" },
     max_completion_tokens: 16000,
-    temperature: 0.55,
+    temperature: temperature,
   });
 
   const result = JSON.parse(response.choices[0].message.content || '{"html":"","css":""}');

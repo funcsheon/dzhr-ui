@@ -1,221 +1,79 @@
 # dzhr UI - AI-Powered Design Generator
 
 ## Overview
-
-dzhr UI is a professional design tool that generates responsive UI mockups from text prompts, website templates, and design systems. The application allows users to create designs for multiple device types (phone, tablet, desktop, watch, VR/AR), analyze existing websites and design systems for style extraction, and export designs as Figma files, images, or code (HTML/CSS).
-
-The application follows a clean, professional design philosophy inspired by Linear and Figma, emphasizing workspace efficiency with a three-panel layout (controls → canvas → properties) and subdued colors that don't compete with user-generated designs.
+dzhr UI is an AI-powered design tool that generates responsive UI mockups from text prompts, website templates, and design systems. It enables users to create designs for various devices (phone, tablet, desktop, watch, VR/AR), analyze existing web assets for style extraction, and export designs as Figma files, images, or code (HTML/CSS). The application aims for a clean, professional aesthetic, inspired by tools like Linear and Figma, featuring a three-panel workspace (controls → canvas → properties) and a subdued color palette to highlight user-generated content. The project's ambition is to provide a highly efficient and accurate design generation and analysis platform with strong emphasis on accessibility and design system adherence.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### Frontend Architecture
+### Frontend
+- **Framework:** React 18 with TypeScript, using Vite.
+- **Routing:** Wouter.
+- **State Management:** React hooks for local state, TanStack Query for server state.
+- **UI Components:** Custom library built on Radix UI primitives with shadcn/ui styling ("new-york" variant).
+- **Styling:** Tailwind CSS with custom design tokens, supporting light/dark modes and a custom elevation system.
+- **Design System:** HSL-based color palette, Inter (Google Fonts) and JetBrains Mono typography, custom border radii, and a professional, subdued aesthetic.
 
-**Framework:** React 18 with TypeScript, using Vite as the build tool and development server.
+### Backend
+- **Runtime:** Node.js with Express.js.
+- **Language:** TypeScript with ES modules.
+- **API Design:** RESTful endpoints for template/design system analysis, code parsing, and design system management (CRUD operations).
+- **Request Validation:** Zod schemas.
+- **Development:** Vite middleware for HMR, custom logging.
+- **Build:** Vite for frontend (`dist/public`), esbuild for backend (`dist/index.js`).
 
-**Routing:** Wouter for client-side routing (lightweight alternative to React Router).
+### Data Storage
+- **Primary:** In-memory storage (`MemStorage`) for development.
+- **Database:** Drizzle ORM configured for PostgreSQL (via Neon Database) with a schema for projects and design systems, including metadata, device selections, generated designs, and component definitions.
+- **Migrations:** Drizzle migration system configured for PostgreSQL.
+- **Authentication:** Currently no active authentication, but architecture supports future integration.
 
-**State Management:** React hooks for local state, TanStack Query (React Query) for server state management and data fetching with automatic caching and refetching capabilities.
+### UI/UX Decisions
+- Three-panel layout (controls, canvas, properties) for workspace efficiency.
+- Subdued color palette to prioritize user-generated designs.
+- WCAG 2.1 Level AA compliance integrated as a default requirement for all generated designs.
+- Progress feedback system provides real-time status updates during design generation.
+- Collapsible "Show Examples" section with high-quality prompt templates.
 
-**UI Components:** Custom component library built on Radix UI primitives with shadcn/ui styling system. Uses the "new-york" style variant with extensive Radix UI components including dialogs, dropdowns, popovers, tooltips, tabs, accordions, and form controls.
+### Technical Implementations
+- **AI Integration:** Advanced prompt engineering using GPT-4o (role-based, chain-of-thought, structured constraints), context-aware temperature optimization, and a design validation system (0-100 score).
+- **Design System Compliance:** Critical enforcement mechanisms for 95%+ design system adherence, including structured token extraction, component pattern matching, and verification checklists. Enforces "zero arbitrary values" for colors, sizes, and spacing.
+- **CSS Scoping:** Robust CSS scoping function to prevent generated design styles from affecting the main application UI.
+- **Image Generation:** AI-generated designs include real images from Picsum Photos, complete with accessible alt text.
 
-**Styling:** Tailwind CSS with custom design tokens for colors, spacing, and typography. Supports both light and dark modes with CSS variables for theming. Custom elevation system using `hover-elevate` and `active-elevate-2` classes for interactive feedback.
+## External Dependencies
 
-**Design System:**
-- Color palette based on HSL values with separate light/dark mode configurations
-- Typography using Inter font family (via Google Fonts) and JetBrains Mono for code
-- Custom border radius scale (9px, 6px, 3px)
-- Professional restraint principle - subdued colors that don't compete with user designs
+### AI/ML Services
+- **OpenAI GPT-4o:** For AI analysis, design generation, and refinement. Requires `OPENAI_API_KEY`.
 
-### Backend Architecture
+### Web Scraping & Parsing
+- **Puppeteer:** Headless browser for website analysis and style extraction.
+- **Cheerio:** HTML parser for static DOM structure analysis.
+- **Custom Code Parser (`server/lib/codeParser.ts`):** Extracts components from CSS/SCSS/LESS, JavaScript/TypeScript, and JSON files.
 
-**Runtime:** Node.js with Express.js server framework.
+### Database
+- **Neon Database:** Serverless PostgreSQL solution via `@neondatabase/serverless`. Configured with `DATABASE_URL`.
 
-**Language:** TypeScript with ES modules.
+### Integrations
+- **Figma MCP Integration:** Direct integration with Figma files via Model Context Protocol (`@modelcontextprotocol/sdk`, `figma-developer-mcp`) for extracting components and styles. Requires `FIGMA_API_KEY`.
 
-**API Design:** RESTful endpoints under `/api` prefix:
-- `POST /api/analyze-template` - Analyzes website URLs to extract design patterns
-- `POST /api/analyze-design-system` - Analyzes design system documentation
-- `POST /api/parse-code-file` - Parses uploaded code files (CSS, JS, TS, TSX) to extract component definitions
-- `POST /api/design-systems` - Save design system library to database
-- `GET /api/design-systems` - Retrieve all saved design systems
-- `DELETE /api/design-systems/:id` - Delete a design system by ID
+### UI Libraries
+- **Radix UI:** Unstyled, accessible component primitives.
+- **Lucide React:** Icon library.
+- **cmdk:** Command menu component.
+- **react-day-picker:** Calendar/date picker.
+- **recharts:** Charting library.
+- **embla-carousel-react:** Carousel component.
 
-**Request Validation:** Zod schemas for runtime type checking and validation.
+### Utilities
+- **class-variance-authority:** CSS class composition.
+- **clsx & tailwind-merge:** Conditional class name handling.
+- **date-fns:** Date manipulation.
+- **zod:** Runtime type validation.
+- **multer:** File upload handling.
+- **html-to-image:** Converts HTML/CSS to PNG for design exports.
 
-**Development Server:** Vite middleware integration for hot module replacement in development mode. Custom logging middleware that captures request/response information for API routes.
-
-**Build Process:** 
-- Frontend: Vite builds React app to `dist/public`
-- Backend: esbuild bundles server code to `dist/index.js` with external packages
-
-### Data Storage Solutions
-
-**Primary Strategy:** In-memory storage implementation via `MemStorage` class (currently active).
-
-**Database Schema:** Drizzle ORM configured for PostgreSQL with schema defined in `shared/schema.ts`:
-- **Projects table** with fields for:
-  - Project metadata (name, prompt, creation timestamp)
-  - Device selection (phone, tablet, desktop, watch, VR)
-  - Design system components and URLs
-  - Template URLs and extracted styles
-  - Generated designs with HTML/CSS/images per device
-- **Design Systems table** with fields for:
-  - Unique name (primary key)
-  - Source URL (optional)
-  - Components array (JSONB) containing component definitions with name, type, and URL
-  - Created timestamp
-
-**Migration Strategy:** Database migrations configured in `drizzle.config.ts` with output to `/migrations` directory.
-
-**Rationale:** In-memory storage provides fast development iteration. PostgreSQL schema is prepared for production scaling when data persistence becomes necessary.
-
-### Authentication and Authorization
-
-**Current State:** No authentication implemented. Storage interface includes user-related methods (`getUser`, `getUserByUsername`, `createUser`) but they are not actively used in routes.
-
-**Future Consideration:** Architecture supports adding authentication layer through the storage interface without major refactoring.
-
-### External Dependencies
-
-**AI/ML Services:**
-- **OpenAI GPT-4o** - Enhanced AI analysis and design generation
-  - **Advanced Prompt Engineering**: Uses role-based prompting (senior UI/UX designer), chain-of-thought reasoning, and structured constraints for higher accuracy
-  - **Temperature Control**: 0.75 for creative generation, 0.55 for precise refinement
-  - **Design Validation**: Automatic quality scoring system (0-100) checks for semantic HTML5, modern CSS, real content (no Lorem Ipsum)
-  - **Template analysis**: Extracts design patterns, colors, typography from URLs
-  - **Design system analysis**: Identifies components, tokens, principles from documentation
-  - **Design generation**: Creates responsive HTML/CSS from prompts with detailed design philosophy and quality standards
-  - **Design refinement**: Surgical improvements to existing designs while preserving structure
-  - Configuration: Requires `OPENAI_API_KEY` environment variable
-
-**Web Scraping:**
-- **Puppeteer** - Headless browser for website analysis
-  - Launches in headless mode with sandbox disabled for Replit compatibility
-  - Extracts computed styles (colors, fonts, layouts) from live websites
-  - 30-second timeout for page loads
-- **Cheerio** - HTML parsing for static analysis
-  - Complementary to Puppeteer for DOM structure analysis
-
-**Database:**
-- **Neon Database** - Serverless PostgreSQL (via `@neondatabase/serverless`)
-  - Configured via `DATABASE_URL` environment variable
-  - Drizzle ORM for type-safe database queries
-
-**Session Management:**
-- **connect-pg-simple** - PostgreSQL session store for Express sessions (configured but not actively used in current implementation)
-
-**Image Export:**
-- **html-to-image** - Converts HTML/CSS to PNG for design exports
-  - Used in `toPng` function for generating preview images
-
-**UI Libraries:**
-- **Radix UI** - Unstyled, accessible component primitives (20+ components)
-- **Lucide React** - Icon library
-- **cmdk** - Command menu component
-- **react-day-picker** - Calendar/date picker
-- **recharts** - Charting library
-- **embla-carousel-react** - Carousel component
-
-**Utilities:**
-- **class-variance-authority** - CSS class composition
-- **clsx & tailwind-merge** - Conditional class name handling
-- **date-fns** - Date manipulation
-- **zod** - Runtime type validation
-- **multer** - File upload handling for code file parsing
-
-**Code Parsing:**
-- **Custom Code Parser** (`server/lib/codeParser.ts`) - Extracts components from code files:
-  - **CSS/SCSS/LESS**: Identifies class names matching component patterns (btn-, card-, modal-, input-, etc.)
-  - **JavaScript/TypeScript**: Extracts React component names from function/class declarations and exports
-  - **JSON**: Parses component definitions from JSON structure
-  - Supports batch uploads with functional state management to preserve all components
-
-**Figma MCP Integration:**
-- **Model Context Protocol (MCP)** - Direct integration with Figma files via MCP server:
-  - Uses `@modelcontextprotocol/sdk` with `figma-developer-mcp` package
-  - StdioClientTransport spawns MCP server process via npx
-  - Authenticates using FIGMA_API_KEY environment variable
-  - **API Endpoints**:
-    - `POST /api/figma/analyze` - Extracts components and styles from Figma files
-    - `GET /api/figma/mcp-tools` - Lists available MCP tools
-  - **Response Parsing**: Handles multiple MCP payload formats (application/json, text with JSON, regex patterns)
-  - **UI Integration**: New "Figma" tab in Design System section for importing components from Figma URLs
-  - Normalizes MCP responses into clean `{name, url}[]` format for design system integration
-
-**Development Tools:**
-- **Replit-specific plugins** - Runtime error overlay, cartographer, dev banner for Replit environment
-- **TypeScript** - Static type checking with strict mode enabled
-- **ESLint & Prettier** - Code quality and formatting (implied by project structure)
-
-### Recent Improvements (Latest Session)
-
-**AI System Enhancements (99% Accuracy Goal):**
-1. **Advanced Prompt Engineering** (`server/lib/openai.ts`):
-   - Implemented role-based prompting: AI acts as senior UI/UX designer with 15+ years experience
-   - Added chain-of-thought reasoning: Step-by-step approach analyzes requirements before designing
-   - Structured constraints: Explicit design philosophy, technical requirements, quality standards
-   - Enhanced system messages with detailed design principles (clarity, whitespace, visual hierarchy)
-   - **WCAG 2.1 Level AA compliance integrated as default requirement**
-
-2. **Temperature Optimization**:
-   - Generation: 0.75 for creative, varied designs
-   - Refinement: 0.55 for precise, targeted improvements
-
-3. **Design Validation System**:
-   - Automatic quality scoring (0-100) with threshold of 70 for valid designs
-   - Checks for: semantic HTML5 elements, modern CSS (flexbox/grid), real content, color styling
-   - Validation results logged to console for monitoring
-
-4. **WCAG 2.1 AA Accessibility (Integrated by Default)**:
-   - **Color & Contrast**: 4.5:1 for normal text, 3:1 for large text and interactive elements
-   - **Semantic HTML**: Proper heading hierarchy, semantic elements, correct button/link usage
-   - **Keyboard Navigation**: All interactive elements keyboard accessible with visible focus states (3:1 contrast)
-   - **Forms**: All inputs have associated labels with for/id relationships, ARIA attributes, clear error messages
-   - **Images**: Descriptive alt text for all images, empty alt for decorative images
-   - **Text Readability**: Minimum 16px body text, 1.5 line-height, proper paragraph spacing
-   - **Interactive Elements**: Minimum touch targets (44x44px mobile, 24x24px desktop)
-   - **ARIA Landmarks**: Proper roles for page regions (banner, navigation, main, complementary, contentinfo)
-   - **CSS Accessibility**: Mandatory focus states (outline/box-shadow), 16px base font-size, 1.5 line-height
-   - All generated and refined designs automatically comply with accessibility standards
-   - Enhanced prompts with explicit CSS examples ensure consistent accessibility implementation
-
-5. **UI Improvements** (`client/src/components/PromptInput.tsx`):
-   - Added collapsible "Show Examples" section with 5 high-quality prompt templates
-   - Examples demonstrate best practices: detailed descriptions, specific features, clear structure
-   - One-click insertion of examples into prompt textarea
-
-5. **CSS Scoping Fix** (`client/src/components/DesignCanvas.tsx`):
-   - Implemented robust CSS scoping function to prevent design system styles from leaking to app UI
-   - Handles root selectors (`:root`, `html`, `body`), universal selectors, media queries
-   - dzhr UI interface remains visually consistent regardless of uploaded design systems
-   - Only generated designs in preview canvas use design system styles
-
-**Design System Integration:**
-- Removed Figma tab from Design System section (simplified to 3 tabs: Upload, Analyze, Add Links)
-- Design system components now properly scoped to generated designs only
-
-**Image Generation:**
-- Enhanced AI prompts to include real images in generated designs
-- Uses Picsum Photos service (https://picsum.photos/) for reliable placeholder images
-- Images automatically included in designs that need visual content (hero sections, product grids, testimonials, avatars)
-- All images include proper alt text for accessibility
-- Supports custom dimensions and multiple unique images via ?random parameter
-
-**Progress Feedback System:**
-- Real-time status updates during design generation and refinement
-- Shows 6 stages for generation: analyzing prompt → planning layout → selecting colors → generating HTML/CSS → adding images → final polish
-- Shows 5 stages for refinement: analyzing request → reviewing design → planning improvements → applying refinements → finalizing
-- Visual indicator with animated pulse dot appears below prompt input
-- Status messages update at timed intervals (3-5 seconds) matching the ~20-30 second generation time
-- Automatically clears when generation completes or fails
-- Proper timeout cleanup to prevent memory leaks
-
-**Branding:**
-- Custom logo integration using uploaded file (Group 213_1759502928072.png)
-- Purple rounded square with white "dzhr" text and sparkle decorations
-- Displays as 40x40px in application header
-- Also set as browser favicon for consistent branding across tabs
+### Session Management
+- **connect-pg-simple:** PostgreSQL session store for Express sessions (configured for future use).
