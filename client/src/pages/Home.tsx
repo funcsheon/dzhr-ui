@@ -346,60 +346,60 @@ export default function Home() {
 
       <div className="flex-1 flex overflow-hidden">
         <aside style={{ width: '480px' }} className="border-r flex flex-col">
-          <ScrollArea className="flex-1 p-6">
-            <div className="space-y-6">
-              <DeviceSelector
-                selectedDevices={selectedDevices}
-                onDeviceToggle={handleDeviceToggle}
-              />
-              
-              <DesignSystemUpload
-                components={components}
-                onComponentsChange={setComponents}
-                designSystemUrl={designSystemUrl}
-                onDesignSystemUrlChange={setDesignSystemUrl}
-                onAnalyzeDesignSystem={handleAnalyzeDesignSystem}
-                isAnalyzing={isAnalyzingDesignSystem}
-              />
-              
-              <DesignSystemLibrary
-                components={components}
-                onLoadDesignSystem={handleLoadDesignSystem}
-                onAddComponents={handleAddComponents}
-              />
-              
-              <TemplateUrlInput
-                templateUrl={templateUrl}
-                onUrlChange={setTemplateUrl}
-                templateStyles={templateStyles}
-                onAnalyze={handleAnalyzeTemplate}
-                isAnalyzing={isAnalyzingTemplate}
-              />
-              
-              <PromptInput
-                prompt={prompt}
-                onPromptChange={setPrompt}
-                onGenerate={handleGenerate}
-                onRefine={handleRefine}
-                isGenerating={isGenerating}
-                disabled={selectedDevices.length === 0}
-                hasExistingDesign={designs.length > 0}
-              />
-              
-              {isGenerating && progressStatus && (
-                <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                    <p className="text-sm font-medium text-primary" data-testid="text-progress-status">
-                      {progressStatus}
-                    </p>
-                  </div>
+          <div className="flex-1 flex flex-col p-6 gap-6 overflow-hidden">
+            <DeviceSelector
+              selectedDevices={selectedDevices}
+              onDeviceToggle={handleDeviceToggle}
+            />
+            
+            <DesignSystemUpload
+              components={components}
+              onComponentsChange={setComponents}
+              designSystemUrl={designSystemUrl}
+              onDesignSystemUrlChange={setDesignSystemUrl}
+              onAnalyzeDesignSystem={handleAnalyzeDesignSystem}
+              isAnalyzing={isAnalyzingDesignSystem}
+            />
+            
+            <DesignSystemLibrary
+              components={components}
+              onLoadDesignSystem={handleLoadDesignSystem}
+              onAddComponents={handleAddComponents}
+            />
+            
+            <TemplateUrlInput
+              templateUrl={templateUrl}
+              onUrlChange={setTemplateUrl}
+              templateStyles={templateStyles}
+              onAnalyze={handleAnalyzeTemplate}
+              isAnalyzing={isAnalyzingTemplate}
+            />
+            
+            <PromptInput
+              prompt={prompt}
+              onPromptChange={setPrompt}
+              onGenerate={handleGenerate}
+              onRefine={handleRefine}
+              isGenerating={isGenerating}
+              disabled={selectedDevices.length === 0}
+              hasExistingDesign={designs.length > 0}
+            />
+            
+            {isGenerating && progressStatus && (
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                <div className="flex items-center gap-3">
+                  <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                  <p className="text-sm font-medium text-primary" data-testid="text-progress-status">
+                    {progressStatus}
+                  </p>
                 </div>
-              )}
-              
+              </div>
+            )}
+            
+            <div className="flex-1 min-h-0">
               <PromptHistory onSelectPrompt={handleSelectPrompt} />
             </div>
-          </ScrollArea>
+          </div>
         </aside>
 
         <main className="flex-1 overflow-hidden">

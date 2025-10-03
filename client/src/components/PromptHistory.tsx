@@ -21,12 +21,12 @@ export function PromptHistory({ onSelectPrompt }: PromptHistoryProps) {
 
   if (isLoading) {
     return (
-      <div className="space-y-2">
+      <div className="flex flex-col h-full gap-2">
         <div className="flex items-center gap-2 text-sm font-medium">
           <Clock className="h-4 w-4" />
           <span>Recent Prompts</span>
         </div>
-        <Card className="p-4">
+        <Card className="p-4 flex-1">
           <p className="text-sm text-muted-foreground">Loading...</p>
         </Card>
       </div>
@@ -38,13 +38,13 @@ export function PromptHistory({ onSelectPrompt }: PromptHistoryProps) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col h-full gap-2">
       <div className="flex items-center gap-2 text-sm font-medium">
         <Clock className="h-4 w-4" />
         <span>Recent Prompts</span>
       </div>
-      <Card className="overflow-hidden">
-        <ScrollArea className="h-[200px]">
+      <Card className="overflow-hidden flex-1 flex flex-col min-h-0">
+        <ScrollArea className="flex-1">
           <div className="divide-y">
             {prompts.map((item) => (
               <button
