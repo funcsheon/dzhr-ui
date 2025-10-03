@@ -345,7 +345,7 @@ export default function Home() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <aside style={{ width: '480px' }} className="border-r overflow-hidden flex flex-col">
+        <aside style={{ width: '480px' }} className="border-r flex flex-col">
           <ScrollArea className="flex-1 p-6">
             <div className="space-y-6">
               <DeviceSelector
