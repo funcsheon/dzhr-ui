@@ -265,13 +265,20 @@ Draw inspiration from contemporary websites to create modern, beautiful layouts:
    • Hover Lift Effect - Cards rise on hover (transform: translateY(-4px))
    • Focus Rings - Modern, rounded focus indicators with offset
 
-5. COMPONENT PATTERNS:
+5. COMPONENT PATTERNS (ALWAYS ACCESSIBLE & MODERN):
    • Pill-Shaped Buttons - Fully rounded (border-radius: 9999px) for modern feel
    • Ghost Buttons - Transparent background with border, fills on hover
    • Input Groups - Combined inputs with shared borders (search + button)
    • Badge Clusters - Small, colored labels for categorization
    • Avatar Stacks - Overlapping circular avatars for team/users
    • Stats Cards - Large numbers with small labels, minimal decoration
+   • Modals/Dialogs - Backdrop blur, centered, smooth entrance animation, proper ARIA attributes
+   • Dropdowns/Menus - Subtle elevation, slide-in animation, keyboard navigation support
+   • Tooltips - High contrast, arrow pointer, aria-describedby for accessibility
+   • Alerts/Toasts - Color-coded, icon support, aria-live announcements, dismissible
+   • Tabs - Active indicator (underline or pill), keyboard arrow navigation, aria-selected
+   • Progress Bars - Smooth animation, accessible labels with aria-valuenow/aria-valuemax
+   • Accordions - Chevron indicators, aria-expanded, smooth height transitions
 
 6. MODERN CSS TECHNIQUES:
    • CSS Grid with grid-template-areas - Named grid areas for clarity
@@ -393,6 +400,58 @@ COMPONENT USAGE RULES:
 4. Create components that feel NATIVE to this design system
 5. Match the naming conventions and structure patterns
 
+FILLING DESIGN SYSTEM GAPS (CRITICAL):
+When your design requires components NOT in the provided list, you MUST create them following these rules:
+
+1. ANALYZE THE EXISTING COMPONENTS FIRST:
+   - Study the visual language of provided components
+   - Identify patterns: border radius style, shadow usage, color application, spacing rhythm
+   - Note the level of detail/complexity in existing components
+   - Understand the design system's personality (minimal, playful, corporate, modern, etc.)
+
+2. CREATE MATCHING COMPONENTS:
+   - Build missing components (modals, dropdowns, tooltips, badges, alerts, tabs, etc.) that look like they belong
+   - Use the SAME visual patterns: if existing buttons have 8px border radius, new components use 8px
+   - Apply the SAME color system: match how primary/secondary/accent colors are used
+   - Maintain the SAME spacing scale: if cards use 16px padding, modals should too
+   - Keep the SAME interaction patterns: hover effects, transitions, focus states
+
+3. ACCESSIBILITY FOR ALL COMPONENTS (NEW & EXISTING):
+   - Every component MUST meet WCAG 2.1 AA standards (already detailed above)
+   - Focus indicators on ALL interactive elements (3:1 contrast minimum)
+   - Proper ARIA attributes: aria-label, aria-expanded, aria-selected, aria-controls as needed
+   - Semantic HTML: use native elements when possible (<dialog>, <details>, proper button/link usage)
+   - Keyboard navigation: Enter/Space for buttons, Arrow keys for lists/tabs, Escape to close modals
+   - Screen reader support: announce state changes with aria-live when appropriate
+
+4. MODERN, UP-TO-DATE STYLING:
+   - Use contemporary component patterns (2024/2025 standards):
+     * Modals: Backdrop blur (backdrop-filter: blur(8px)), centered with smooth entrance animation
+     * Dropdowns: Subtle shadow elevation, smooth slide-in animation, proper z-index layering
+     * Tooltips: Dark background with light text (or vice versa for high contrast), arrow pointer, appears on hover/focus
+     * Alerts: Icon + message layout, color-coded (success=green, error=red, info=blue, warning=yellow), dismissible
+     * Badges: Pill-shaped or rounded rectangular, small size, subtle backgrounds, high contrast text
+     * Tabs: Underline indicator or pill-style active state, smooth transition animation
+     * Progress bars: Smooth animation, gradient fill option, percentage indicator
+     * Skeleton loaders: Pulse animation, match content shape, subtle gray gradient
+   
+5. COMPONENT DESIGN PATTERNS:
+   ✓ Cards: Consistent padding (16-24px), subtle borders or shadows, hover lift effect optional
+   ✓ Buttons: Clear hierarchy (primary=filled, secondary=outline, tertiary=ghost), consistent height (40-44px)
+   ✓ Inputs: Clear focus state, label positioning, error state styling, helper text support
+   ✓ Modals: Centered overlay, backdrop, header/body/footer structure, close button, max-width constraint
+   ✓ Dropdowns: Align with trigger, max-height with scroll, keyboard navigation, checkmarks for selected items
+   ✓ Tooltips: Position aware (flip if near edge), small arrow pointer, brief text only, show on hover/focus
+
+6. QUALITY CHECKLIST FOR GAP-FILLING COMPONENTS:
+   ✓ Visual style matches existing components (could fool the design system creator)
+   ✓ Uses same color tokens, typography scale, spacing values as existing components
+   ✓ Includes all necessary states (default, hover, active, focus, disabled, error)
+   ✓ Fully accessible with WCAG 2.1 AA compliance
+   ✓ Modern interaction patterns with smooth animations
+   ✓ Keyboard navigable and screen reader friendly
+   ✓ Works perfectly within device constraints (${device.width}x${device.height}px)
+
 VISUAL CONSISTENCY REQUIREMENTS:
 ✓ Button styles match the design system's button component patterns
 ✓ Card/container styles match the design system's card patterns
@@ -400,8 +459,9 @@ VISUAL CONSISTENCY REQUIREMENTS:
 ✓ Typography hierarchy matches the design system's text components
 ✓ Color application matches the design system's color usage
 ✓ Spacing patterns match the design system's layout components
+✓ ALL gap-filling components are indistinguishable from native design system components
 
-⚠️  Your design should look like it was built BY the design system team.`;
+⚠️  Your design should look like it was built BY the design system team, including any components you create to fill gaps.`;
   }
 
   systemContext += `\n\nIMAGE REQUIREMENTS:
