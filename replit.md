@@ -183,3 +183,10 @@ Preferred communication style: Simple, everyday language.
 **Design System Integration:**
 - Removed Figma tab from Design System section (simplified to 3 tabs: Upload, Analyze, Add Links)
 - Design system components now properly scoped to generated designs only
+
+**Image Generation (Current Session):**
+- Enhanced AI prompts to include real images in generated designs
+- Uses Picsum Photos service (https://picsum.photos/) for reliable placeholder images
+- Images automatically included in designs that need visual content (hero sections, product grids, testimonials, avatars)
+- All images include proper alt text for accessibility
+- Supports custom dimensions and multiple unique images via ?random parameter

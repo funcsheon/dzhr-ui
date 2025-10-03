@@ -183,7 +183,18 @@ Incorporate and reference these design system components: ${designSystemComponen
 Design components that feel native to this system.`;
   }
 
-  systemContext += `\n\nOUTPUT FORMAT:
+  systemContext += `\n\nIMAGE REQUIREMENTS:
+When the design needs images (hero images, product photos, avatars, illustrations):
+- Use Picsum Photos service: https://picsum.photos/[width]/[height]
+- Example hero image: <img src="https://picsum.photos/1200/600" alt="Hero image">
+- Example product: <img src="https://picsum.photos/400/400" alt="Product">
+- Example avatar: <img src="https://picsum.photos/100/100" alt="User avatar">
+- Add ?random=[number] to get different images: https://picsum.photos/400/400?random=1
+- Always include descriptive alt text for accessibility
+- Set proper width/height in the URL to match your design needs
+- For multiple different images, use different random numbers (e.g., ?random=1, ?random=2, ?random=3)
+
+OUTPUT FORMAT:
 Return ONLY valid JSON with this exact structure: {"html": "complete HTML markup", "css": "complete CSS styles"}
 No explanations, no markdown, just pure JSON.`;
 
@@ -211,6 +222,7 @@ Create a stunning, professional ${device.name} interface featuring:
 - Complete HTML structure (semantic elements: header, nav, main, sections, footer as appropriate)
 - Beautiful, modern CSS with thoughtful typography and spacing
 - Real, contextually appropriate content (no Lorem Ipsum - use actual relevant text)
+- High-quality placeholder images (hero images, product photos, avatars as needed)
 - Professional color scheme with intentional color choices
 - Hover states and interactive element styling
 - Polished details (shadows, borders, transitions)
@@ -331,7 +343,18 @@ Ensure refinements stay consistent with the system's guidelines.`;
 Stay aligned with these components: ${designSystemComponents.map(c => c.name).join(', ')}`;
   }
 
-  systemContext += `\n\nOUTPUT FORMAT:
+  systemContext += `\n\nIMAGE REQUIREMENTS:
+When adding or modifying images in the refined design:
+- Use Picsum Photos service: https://picsum.photos/[width]/[height]
+- Example hero image: <img src="https://picsum.photos/1200/600" alt="Hero image">
+- Example product: <img src="https://picsum.photos/400/400" alt="Product">
+- Example avatar: <img src="https://picsum.photos/100/100" alt="User avatar">
+- Add ?random=[number] to get different images: https://picsum.photos/400/400?random=1
+- Always include descriptive alt text for accessibility
+- Set proper width/height in the URL to match your design needs
+- For multiple different images, use different random numbers (e.g., ?random=1, ?random=2, ?random=3)
+
+OUTPUT FORMAT:
 Return ONLY valid JSON: {"html": "refined HTML markup", "css": "refined CSS styles"}
 No explanations, just pure JSON.`;
 
