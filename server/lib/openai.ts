@@ -150,8 +150,63 @@ DESIGN PHILOSOPHY:
 - Prioritize clarity and user experience over decoration
 - Use whitespace intentionally to create visual breathing room
 - Establish clear visual hierarchy through size, weight, and color
-- Ensure high contrast for readability (4.5:1 minimum)
+- Ensure high contrast for readability (4.5:1 minimum for normal text, 3:1 for large text)
 - Create designs that feel polished, professional, and trustworthy
+- Design for all users, including those with disabilities
+
+WCAG 2.1 LEVEL AA ACCESSIBILITY REQUIREMENTS (MANDATORY):
+
+1. COLOR & CONTRAST:
+   - Normal text: minimum 4.5:1 contrast ratio
+   - Large text (18pt+/14pt+ bold): minimum 3:1 contrast ratio
+   - Interactive elements: minimum 3:1 contrast against background
+   - Never use color as the ONLY way to convey information
+
+2. SEMANTIC HTML & STRUCTURE:
+   - Use proper heading hierarchy (h1 → h2 → h3, no skipping levels)
+   - Use semantic elements: <header>, <nav>, <main>, <article>, <section>, <footer>, <aside>
+   - Use <button> for actions, <a> for navigation
+   - Use proper list elements (<ul>, <ol>, <li>) for lists
+   - Use <label> elements for all form inputs
+
+3. KEYBOARD NAVIGATION:
+   - All interactive elements must be keyboard accessible (tab, enter, space)
+   - Visible focus indicators with minimum 3:1 contrast (use outline or box-shadow)
+   - Logical tab order that follows visual flow
+   - Skip to main content link for long pages
+
+4. FORMS & INPUTS:
+   - Every input has an associated <label> (for/id relationship or wrapping)
+   - Use aria-describedby for help text
+   - Use aria-required="true" or required attribute for required fields
+   - Clear error messages with aria-live="polite" announcements
+   - Placeholder text is NOT a replacement for labels
+
+5. IMAGES & MEDIA:
+   - All images MUST have descriptive alt text
+   - Decorative images use alt="" (empty alt)
+   - Complex images (charts, graphs) need detailed descriptions
+
+6. TEXT & READABILITY:
+   - Minimum 16px font size for body text
+   - Line height of at least 1.5 for body text
+   - Paragraph spacing at least 1.5x the line height
+   - Text can be resized up to 200% without loss of functionality
+   - Avoid ALL CAPS for long text (harder to read)
+
+7. INTERACTIVE ELEMENTS:
+   - Minimum touch target size: 44x44px (mobile) or 24x24px (desktop)
+   - Hover states must also have focus states
+   - Links must be distinguishable from regular text
+   - Buttons must look clickable with clear affordances
+
+8. ARIA LANDMARKS & ROLES:
+   - Use role="banner" for header (or <header> in page context)
+   - Use role="navigation" for nav (or <nav>)
+   - Use role="main" for main content (or <main>)
+   - Use role="complementary" for sidebars (or <aside>)
+   - Use role="contentinfo" for footer (or <footer> in page context)
+   - Use aria-label or aria-labelledby to distinguish multiple landmarks of same type
 
 TECHNICAL REQUIREMENTS FOR ${device.name} (${device.width}x${device.height}px):
 1. Return COMPLETE, PRODUCTION-READY HTML with real, meaningful content
@@ -159,7 +214,21 @@ TECHNICAL REQUIREMENTS FOR ${device.name} (${device.width}x${device.height}px):
 3. Use semantic HTML5 elements (header, nav, main, article, section, footer)
 4. Ensure perfect responsive behavior within device constraints
 5. Add micro-interactions and hover states for interactive elements
-6. Use CSS variables for colors, spacing, and typography for consistency`;
+6. Use CSS variables for colors, spacing, and typography for consistency
+7. IMPLEMENT ALL WCAG 2.1 AA REQUIREMENTS listed above
+
+MANDATORY CSS ACCESSIBILITY REQUIREMENTS:
+1. Set base font-size to 16px minimum:
+   body { font-size: 16px; } OR html { font-size: 100%; }
+2. Include visible focus states for ALL interactive elements:
+   button:focus, input:focus, textarea:focus, select:focus, a:focus {
+     outline: 2px solid [high-contrast-color];
+     outline-offset: 2px;
+   }
+3. Set line-height to 1.5 minimum for body text:
+   body { line-height: 1.5; }
+4. Ensure paragraph spacing (margin-bottom) is at least 1.5x line-height
+5. Make touch targets at least 44px height/width (mobile) or 24px (desktop)`;
 
   if (designSystemUrl) {
     systemContext += `\n\nDESIGN SYSTEM CONSTRAINTS:
@@ -229,11 +298,23 @@ Create a stunning, professional ${device.name} interface featuring:
 
 QUALITY STANDARDS:
 ✓ Visual hierarchy is immediately clear
-✓ Text is highly readable with proper contrast
+✓ Text is highly readable with proper contrast (4.5:1+ normal, 3:1+ large)
 ✓ Spacing creates visual breathing room
 ✓ Design feels cohesive and intentional
 ✓ All interactive elements are obvious and accessible
 ✓ Layout works perfectly within ${device.width}x${device.height}px
+
+ACCESSIBILITY CHECKLIST (VERIFY ALL BEFORE SUBMITTING):
+✓ Proper heading hierarchy (h1 → h2 → h3, no skipping)
+✓ All images have descriptive alt text
+✓ All form inputs have associated <label> elements with for/id
+✓ Color contrast meets 4.5:1 (normal text) and 3:1 (large text)
+✓ CSS includes focus states: button:focus, input:focus, a:focus with visible outline
+✓ Semantic HTML used throughout (<header>, <nav>, <main>, <button>, etc.)
+✓ CSS sets body { font-size: 16px; line-height: 1.5; }
+✓ Touch targets have min-height: 44px (mobile) or min-height: 24px (desktop)
+✓ ARIA landmarks for page regions (role attributes or semantic tags)
+✓ Keyboard navigation fully functional (tab order, enter/space work)
 
 Return JSON: {"html": "<your complete HTML>", "css": "your complete CSS"}`
       }
@@ -316,13 +397,33 @@ REFINEMENT PRINCIPLES:
 - Enhance visual hierarchy and clarity through refinement
 - Test changes mentally for unintended side effects
 - Preserve the design system's visual language
+- ALWAYS maintain WCAG 2.1 AA accessibility compliance
+
+WCAG 2.1 LEVEL AA ACCESSIBILITY REQUIREMENTS (MAINTAIN AT ALL TIMES):
+- Color contrast: 4.5:1 (normal text), 3:1 (large text, interactive elements)
+- Proper heading hierarchy (h1 → h2 → h3, no skipping)
+- All images have descriptive alt text
+- Form inputs have associated labels
+- Visible focus states (3:1 contrast minimum)
+- Semantic HTML (<header>, <nav>, <main>, <button>, etc.)
+- Minimum 16px body text, 1.5 line-height
+- Touch targets 44x44px (mobile) or 24x24px (desktop)
+- ARIA landmarks and roles for page regions
+- Keyboard navigation fully functional
 
 TECHNICAL REQUIREMENTS FOR ${device.name} (${device.width}x${device.height}px):
 1. Modify the HTML/CSS based PRECISELY on the refinement instructions
 2. Preserve the overall structure and content unless explicitly asked to change
-3. Maintain semantic HTML5 and accessibility standards
+3. Maintain semantic HTML5 and WCAG 2.1 AA accessibility standards
 4. Keep the design within device constraints
-5. Return COMPLETE, WORKING HTML with all necessary CSS`;
+5. Return COMPLETE, WORKING HTML with all necessary CSS
+6. NEVER compromise accessibility during refinement
+
+MANDATORY CSS ACCESSIBILITY (must preserve/add if missing):
+- Base font-size: 16px minimum (body { font-size: 16px; })
+- Visible focus states: button:focus, input:focus, etc. with outline or box-shadow
+- Line-height: 1.5 minimum for body text
+- Touch targets: 44px (mobile) or 24px (desktop) minimum`;
 
   if (designSystemUrl) {
     systemContext += `\n\nDESIGN SYSTEM CONSTRAINTS:
@@ -398,6 +499,8 @@ QUALITY CHECKS:
 ✓ No breaking changes to working elements
 ✓ Visual hierarchy remains clear
 ✓ All functionality is preserved or enhanced
+✓ WCAG 2.1 AA compliance maintained (contrast, semantics, keyboard access, labels)
+✓ Accessibility features not degraded during refinement
 
 Return JSON: {"html": "<refined complete HTML>", "css": "refined complete CSS"}`
       }

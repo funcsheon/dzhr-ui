@@ -159,6 +159,7 @@ Preferred communication style: Simple, everyday language.
    - Added chain-of-thought reasoning: Step-by-step approach analyzes requirements before designing
    - Structured constraints: Explicit design philosophy, technical requirements, quality standards
    - Enhanced system messages with detailed design principles (clarity, whitespace, visual hierarchy)
+   - **WCAG 2.1 Level AA compliance integrated as default requirement**
 
 2. **Temperature Optimization**:
    - Generation: 0.75 for creative, varied designs
@@ -169,7 +170,20 @@ Preferred communication style: Simple, everyday language.
    - Checks for: semantic HTML5 elements, modern CSS (flexbox/grid), real content, color styling
    - Validation results logged to console for monitoring
 
-4. **UI Improvements** (`client/src/components/PromptInput.tsx`):
+4. **WCAG 2.1 AA Accessibility (Integrated by Default)**:
+   - **Color & Contrast**: 4.5:1 for normal text, 3:1 for large text and interactive elements
+   - **Semantic HTML**: Proper heading hierarchy, semantic elements, correct button/link usage
+   - **Keyboard Navigation**: All interactive elements keyboard accessible with visible focus states (3:1 contrast)
+   - **Forms**: All inputs have associated labels with for/id relationships, ARIA attributes, clear error messages
+   - **Images**: Descriptive alt text for all images, empty alt for decorative images
+   - **Text Readability**: Minimum 16px body text, 1.5 line-height, proper paragraph spacing
+   - **Interactive Elements**: Minimum touch targets (44x44px mobile, 24x24px desktop)
+   - **ARIA Landmarks**: Proper roles for page regions (banner, navigation, main, complementary, contentinfo)
+   - **CSS Accessibility**: Mandatory focus states (outline/box-shadow), 16px base font-size, 1.5 line-height
+   - All generated and refined designs automatically comply with accessibility standards
+   - Enhanced prompts with explicit CSS examples ensure consistent accessibility implementation
+
+5. **UI Improvements** (`client/src/components/PromptInput.tsx`):
    - Added collapsible "Show Examples" section with 5 high-quality prompt templates
    - Examples demonstrate best practices: detailed descriptions, specific features, clear structure
    - One-click insertion of examples into prompt textarea
