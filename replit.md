@@ -184,9 +184,24 @@ Preferred communication style: Simple, everyday language.
 - Removed Figma tab from Design System section (simplified to 3 tabs: Upload, Analyze, Add Links)
 - Design system components now properly scoped to generated designs only
 
-**Image Generation (Current Session):**
+**Image Generation:**
 - Enhanced AI prompts to include real images in generated designs
 - Uses Picsum Photos service (https://picsum.photos/) for reliable placeholder images
 - Images automatically included in designs that need visual content (hero sections, product grids, testimonials, avatars)
 - All images include proper alt text for accessibility
 - Supports custom dimensions and multiple unique images via ?random parameter
+
+**Progress Feedback System:**
+- Real-time status updates during design generation and refinement
+- Shows 6 stages for generation: analyzing prompt → planning layout → selecting colors → generating HTML/CSS → adding images → final polish
+- Shows 5 stages for refinement: analyzing request → reviewing design → planning improvements → applying refinements → finalizing
+- Visual indicator with animated pulse dot appears below prompt input
+- Status messages update at timed intervals (3-5 seconds) matching the ~20-30 second generation time
+- Automatically clears when generation completes or fails
+- Proper timeout cleanup to prevent memory leaks
+
+**Branding:**
+- Custom logo integration using uploaded file (Group 213_1759502696335.png)
+- Purple rounded square with white "dzhr" text and sparkle decorations
+- Displays as 40x40px in application header
+- Replaces previous placeholder icon

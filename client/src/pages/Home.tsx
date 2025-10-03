@@ -11,11 +11,11 @@ import { ExportPanel } from "@/components/ExportPanel";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import { toPng } from 'html-to-image';
 import type { DesignSystem } from "@shared/schema";
+import logoImage from "@assets/Group 213_1759502696335.png";
 
 export default function Home() {
   const [selectedDevices, setSelectedDevices] = useState<string[]>([]);
@@ -330,9 +330,12 @@ export default function Home() {
     <div className="h-screen flex flex-col">
       <header className="h-16 border-b flex items-center justify-between px-6">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <Sparkles className="h-5 w-5 text-primary-foreground" />
-          </div>
+          <img 
+            src={logoImage} 
+            alt="dzhr UI Logo" 
+            className="h-10 w-10 rounded-lg"
+            data-testid="img-logo"
+          />
           <div>
             <h1 className="text-lg font-semibold">dzhr UI</h1>
             <p className="text-xs text-muted-foreground">Create responsive designs instantly</p>
