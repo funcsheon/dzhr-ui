@@ -22,53 +22,40 @@ export function DesignCanvas({ designs }: DesignCanvasProps) {
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 10, 50));
   const handleResetZoom = () => setZoom(100);
 
-  if (designs.length === 0) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center space-y-4 max-w-md">
-          <div className="w-24 h-24 mx-auto rounded-full bg-muted flex items-center justify-center">
-            <Maximize2 className="h-12 w-12 text-muted-foreground" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-2">No Designs Yet</h3>
-            <p className="text-sm text-muted-foreground">
-              Configure your settings and click "Generate Designs" to create responsive mockups
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  const hasDesigns = designs.length > 0;
   const activeDesign = designs.find(d => d.device === activeDevice) || designs[0];
-  const deviceInfo = deviceTypes.find(d => d.id === activeDesign.device);
+  const deviceInfo = activeDesign ? deviceTypes.find(d => d.id === activeDesign.device) : null;
 
   return (
     <div className="h-full flex flex-col">
       <div className="border-b p-4 flex items-center justify-between">
-        <Tabs value={activeDevice} onValueChange={setActiveDevice}>
-          <TabsList>
-            {designs.map(design => {
-              const device = deviceTypes.find(d => d.id === design.device);
-              return (
-                <TabsTrigger 
-                  key={design.device} 
-                  value={design.device}
-                  data-testid={`tab-device-${design.device}`}
-                >
-                  {device?.name}
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
-        </Tabs>
+        {hasDesigns ? (
+          <Tabs value={activeDevice} onValueChange={setActiveDevice}>
+            <TabsList>
+              {designs.map(design => {
+                const device = deviceTypes.find(d => d.id === design.device);
+                return (
+                  <TabsTrigger 
+                    key={design.device} 
+                    value={design.device}
+                    data-testid={`tab-device-${design.device}`}
+                  >
+                    {device?.name}
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </Tabs>
+        ) : (
+          <div className="h-10" />
+        )}
 
         <div className="flex items-center gap-2">
           <Button
             size="icon"
             variant="ghost"
             onClick={handleZoomOut}
-            disabled={zoom <= 50}
+            disabled={!hasDesigns || zoom <= 50}
             data-testid="button-zoom-out"
           >
             <ZoomOut className="h-4 w-4" />
@@ -78,7 +65,7 @@ export function DesignCanvas({ designs }: DesignCanvasProps) {
             size="icon"
             variant="ghost"
             onClick={handleZoomIn}
-            disabled={zoom >= 200}
+            disabled={!hasDesigns || zoom >= 200}
             data-testid="button-zoom-in"
           >
             <ZoomIn className="h-4 w-4" />
@@ -87,6 +74,7 @@ export function DesignCanvas({ designs }: DesignCanvasProps) {
             size="sm"
             variant="outline"
             onClick={handleResetZoom}
+            disabled={!hasDesigns}
             data-testid="button-reset-zoom"
           >
             Reset
@@ -96,20 +84,34 @@ export function DesignCanvas({ designs }: DesignCanvasProps) {
 
       <div className="flex-1 overflow-auto bg-muted/30 p-8">
         <div className="flex items-center justify-center min-h-full">
-          <Card 
-            className="shadow-2xl overflow-hidden"
-            style={{
-              width: deviceInfo ? `${deviceInfo.width * (zoom / 100)}px` : 'auto',
-              height: deviceInfo ? `${deviceInfo.height * (zoom / 100)}px` : 'auto',
-            }}
-          >
-            <div 
-              className="w-full h-full bg-background overflow-auto"
-              dangerouslySetInnerHTML={{ __html: activeDesign.html }}
-              data-testid="design-preview"
-            />
-            <style>{activeDesign.css}</style>
-          </Card>
+          {hasDesigns ? (
+            <Card 
+              className="shadow-2xl overflow-hidden"
+              style={{
+                width: deviceInfo ? `${deviceInfo.width * (zoom / 100)}px` : 'auto',
+                height: deviceInfo ? `${deviceInfo.height * (zoom / 100)}px` : 'auto',
+              }}
+            >
+              <div 
+                className="w-full h-full bg-background overflow-auto"
+                dangerouslySetInnerHTML={{ __html: activeDesign.html }}
+                data-testid="design-preview"
+              />
+              <style>{activeDesign.css}</style>
+            </Card>
+          ) : (
+            <div className="text-center space-y-4 max-w-md">
+              <div className="w-24 h-24 mx-auto rounded-full bg-muted flex items-center justify-center">
+                <Maximize2 className="h-12 w-12 text-muted-foreground" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">No Designs Yet</h3>
+                <p className="text-sm text-muted-foreground">
+                  Configure your settings and click "Generate Designs" to create responsive mockups
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
