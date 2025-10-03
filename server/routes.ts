@@ -7,6 +7,7 @@ import { analyzeWebsiteTemplate, analyzeDesignSystem, generateDesign } from "./l
 import { deviceTypes, insertDesignSystemSchema } from "@shared/schema";
 import { storage } from "./storage";
 import { parseCodeFile } from "./lib/codeParser";
+import { getFigmaComponents, getFigmaStyles, listMcpTools } from "./lib/figmaMcp";
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -303,6 +304,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Figma export error:', error);
       res.status(500).json({ 
         error: error instanceof Error ? error.message : 'Failed to export to Figma' 
+      });
+    }
+  });
+
+  app.post("/api/figma/analyze", async (req, res) => {
+    try {
+      const schema = z.object({
+        fileKey: z.string(),
+      });
+
+      const { fileKey } = schema.parse(req.body);
+      
+      const [components, styles] = await Promise.all([
+        getFigmaComponents(fileKey),
+        getFigmaStyles(fileKey),
+      ]);
+
+      res.json({
+        components,
+        styles,
+      });
+    } catch (error) {
+      console.error('Figma MCP analysis error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to analyze Figma file' 
+      });
+    }
+  });
+
+  app.get("/api/figma/mcp-tools", async (_req, res) => {
+    try {
+      const tools = await listMcpTools();
+      res.json(tools);
+    } catch (error) {
+      console.error('MCP tools listing error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to list MCP tools' 
       });
     }
   });
