@@ -28,6 +28,7 @@ export default function Home() {
   const [isAnalyzingTemplate, setIsAnalyzingTemplate] = useState(false);
   const [isAnalyzingDesignSystem, setIsAnalyzingDesignSystem] = useState(false);
   const [designs, setDesigns] = useState<any[]>([]);
+  const [progressStatus, setProgressStatus] = useState('');
   const { toast } = useToast();
 
   const handleDeviceToggle = (deviceId: string) => {
@@ -137,6 +138,21 @@ export default function Home() {
 
   const handleGenerate = async () => {
     setIsGenerating(true);
+    setProgressStatus('Analyzing your prompt...');
+    
+    const progressSteps = [
+      { message: 'Planning layout and structure...', delay: 3000 },
+      { message: 'Selecting colors and typography...', delay: 6000 },
+      { message: 'Generating HTML and CSS...', delay: 10000 },
+      { message: 'Adding images and visual elements...', delay: 15000 },
+      { message: 'Applying final polish and refinements...', delay: 20000 },
+    ];
+
+    const timeouts: NodeJS.Timeout[] = [];
+    progressSteps.forEach(({ message, delay }) => {
+      const timeout = setTimeout(() => setProgressStatus(message), delay);
+      timeouts.push(timeout);
+    });
     
     try {
       const response = await fetch('/api/generate-designs', {
@@ -177,7 +193,9 @@ export default function Home() {
         variant: "destructive",
       });
     } finally {
+      timeouts.forEach(timeout => clearTimeout(timeout));
       setIsGenerating(false);
+      setProgressStatus('');
     }
   };
 
@@ -185,6 +203,20 @@ export default function Home() {
     if (designs.length === 0) return;
     
     setIsGenerating(true);
+    setProgressStatus('Analyzing refinement request...');
+    
+    const progressSteps = [
+      { message: 'Reviewing current design...', delay: 2000 },
+      { message: 'Planning targeted improvements...', delay: 5000 },
+      { message: 'Applying refinements...', delay: 10000 },
+      { message: 'Finalizing changes...', delay: 15000 },
+    ];
+
+    const timeouts: NodeJS.Timeout[] = [];
+    progressSteps.forEach(({ message, delay }) => {
+      const timeout = setTimeout(() => setProgressStatus(message), delay);
+      timeouts.push(timeout);
+    });
     
     try {
       const response = await fetch('/api/refine-designs', {
@@ -219,7 +251,9 @@ export default function Home() {
         variant: "destructive",
       });
     } finally {
+      timeouts.forEach(timeout => clearTimeout(timeout));
       setIsGenerating(false);
+      setProgressStatus('');
     }
   };
 
@@ -348,6 +382,17 @@ export default function Home() {
                 disabled={selectedDevices.length === 0}
                 hasExistingDesign={designs.length > 0}
               />
+              
+              {isGenerating && progressStatus && (
+                <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                    <p className="text-sm font-medium text-primary" data-testid="text-progress-status">
+                      {progressStatus}
+                    </p>
+                  </div>
+                </div>
+              )}
               
               <PromptHistory onSelectPrompt={handleSelectPrompt} />
             </div>
