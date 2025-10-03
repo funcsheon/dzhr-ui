@@ -181,6 +181,48 @@ export default function Home() {
     }
   };
 
+  const handleRefine = async () => {
+    if (designs.length === 0) return;
+    
+    setIsGenerating(true);
+    
+    try {
+      const response = await fetch('/api/refine-designs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentDesigns: designs,
+          refinementPrompt: prompt,
+          devices: selectedDevices,
+          designSystemUrl: designSystemUrl || undefined,
+          designSystemComponents: components.length > 0 ? components : undefined,
+          templateStyles: templateStyles || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to refine designs');
+      }
+
+      const { designs: refinedDesigns } = await response.json();
+      setDesigns(refinedDesigns);
+      
+      toast({
+        title: "Design refined",
+        description: "Your design has been updated based on your changes",
+      });
+    } catch (error) {
+      toast({
+        title: "Refinement failed",
+        description: error instanceof Error ? error.message : "Could not refine design",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleExportFigma = async () => {
     if (designs.length === 0) return;
 
@@ -307,8 +349,10 @@ export default function Home() {
                 prompt={prompt}
                 onPromptChange={setPrompt}
                 onGenerate={handleGenerate}
+                onRefine={handleRefine}
                 isGenerating={isGenerating}
                 disabled={selectedDevices.length === 0}
+                hasExistingDesign={designs.length > 0}
               />
               
               <PromptHistory onSelectPrompt={handleSelectPrompt} />
@@ -320,38 +364,40 @@ export default function Home() {
           <DesignCanvas designs={designs} />
         </main>
 
-        {designs.length > 0 && (
-          <aside className="w-96 border-l overflow-hidden flex flex-col">
-            <Tabs defaultValue="export" className="flex-1 flex flex-col">
-              <TabsList className="mx-6 mt-6">
-                <TabsTrigger value="export" className="flex-1">Export</TabsTrigger>
-                <TabsTrigger value="code" className="flex-1" disabled={!activeDesign}>
-                  Code
-                </TabsTrigger>
-              </TabsList>
+        <aside className="w-96 border-l overflow-hidden flex flex-col">
+          <Tabs defaultValue="export" className="flex-1 flex flex-col">
+            <TabsList className="mx-6 mt-6">
+              <TabsTrigger value="export" className="flex-1">Export</TabsTrigger>
+              <TabsTrigger value="code" className="flex-1" disabled={!activeDesign}>
+                Code
+              </TabsTrigger>
+            </TabsList>
+            
+            <ScrollArea className="flex-1 p-6">
+              <TabsContent value="export" className="mt-0">
+                <ExportPanel
+                  onExportFigma={handleExportFigma}
+                  onExportImage={handleExportImage}
+                  onExportCode={handleExportCode}
+                  disabled={designs.length === 0}
+                />
+              </TabsContent>
               
-              <ScrollArea className="flex-1 p-6">
-                <TabsContent value="export" className="mt-0">
-                  <ExportPanel
-                    onExportFigma={handleExportFigma}
-                    onExportImage={handleExportImage}
-                    onExportCode={handleExportCode}
-                    disabled={designs.length === 0}
+              <TabsContent value="code" className="mt-0">
+                {activeDesign ? (
+                  <CodeExport
+                    html={activeDesign.html}
+                    css={activeDesign.css}
                   />
-                </TabsContent>
-                
-                <TabsContent value="code" className="mt-0">
-                  {activeDesign && (
-                    <CodeExport
-                      html={activeDesign.html}
-                      css={activeDesign.css}
-                    />
-                  )}
-                </TabsContent>
-              </ScrollArea>
-            </Tabs>
-          </aside>
-        )}
+                ) : (
+                  <div className="text-sm text-muted-foreground text-center py-8">
+                    Generate a design to view code
+                  </div>
+                )}
+              </TabsContent>
+            </ScrollArea>
+          </Tabs>
+        </aside>
       </div>
     </div>
   );

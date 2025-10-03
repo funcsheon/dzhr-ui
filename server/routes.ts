@@ -272,6 +272,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/refine-designs", async (req, res) => {
+    try {
+      const schema = z.object({
+        currentDesigns: z.array(z.object({
+          device: z.string(),
+          html: z.string(),
+          css: z.string(),
+        })),
+        refinementPrompt: z.string().min(1),
+        devices: z.array(z.string()),
+        designSystemUrl: z.string().url().optional(),
+        designSystemComponents: z.array(z.object({
+          name: z.string(),
+          url: z.string(),
+        })).optional(),
+        templateStyles: z.object({
+          colors: z.array(z.string()).optional(),
+          fonts: z.array(z.string()).optional(),
+          spacing: z.array(z.string()).optional(),
+          layouts: z.array(z.string()).optional(),
+        }).optional(),
+      });
+
+      const data = schema.parse(req.body);
+      
+      const { refineDesign } = await import('./lib/openai.js');
+      
+      const designs = await Promise.all(
+        data.currentDesigns.map(async (currentDesign) => {
+          const device = deviceTypes.find(d => d.id === currentDesign.device);
+          if (!device) {
+            throw new Error(`Invalid device: ${currentDesign.device}`);
+          }
+
+          return refineDesign({
+            currentHtml: currentDesign.html,
+            currentCss: currentDesign.css,
+            refinementPrompt: data.refinementPrompt,
+            device,
+            designSystemUrl: data.designSystemUrl,
+            designSystemComponents: data.designSystemComponents,
+            templateStyles: data.templateStyles,
+          });
+        })
+      );
+
+      res.json({ designs });
+    } catch (error) {
+      console.error('Design refinement error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : 'Failed to refine designs' 
+      });
+    }
+  });
+
   app.post("/api/export-figma", async (req, res) => {
     try {
       const schema = z.object({

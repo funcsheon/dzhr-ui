@@ -147,3 +147,105 @@ Return JSON with format: {"html": "<div>...</div>", "css": "div { ... }"}`
     css: result.css || '',
   };
 }
+
+interface RefineDesignParams {
+  currentHtml: string;
+  currentCss: string;
+  refinementPrompt: string;
+  device: {
+    id: string;
+    name: string;
+    width: number;
+    height: number;
+  };
+  designSystemUrl?: string;
+  designSystemComponents?: { name: string; url: string }[];
+  templateStyles?: {
+    colors?: string[];
+    fonts?: string[];
+    spacing?: string[];
+    layouts?: string[];
+  };
+}
+
+export async function refineDesign(params: RefineDesignParams) {
+  const openai = getOpenAIClient();
+  const { currentHtml, currentCss, refinementPrompt, device, designSystemUrl, designSystemComponents, templateStyles } = params;
+
+  let systemContext = `You are an expert web designer. You have an existing design that needs to be refined based on user feedback.
+
+CRITICAL REQUIREMENTS:
+1. Modify the existing HTML/CSS based on the refinement instructions
+2. Preserve the overall structure and content unless explicitly asked to change
+3. Make targeted improvements based on the user's request
+4. Return COMPLETE, WORKING HTML with all necessary CSS
+5. Ensure the design remains within ${device.width}x${device.height}px constraints`;
+
+  if (designSystemUrl) {
+    systemContext += `\n\nFollow the design system at: ${designSystemUrl}`;
+  }
+
+  if (templateStyles) {
+    systemContext += `\n\nStyle constraints:
+- Colors: ${templateStyles.colors?.join(', ')}
+- Fonts: ${templateStyles.fonts?.join(', ')}
+- Spacing: ${templateStyles.spacing?.join(', ')}
+- Layouts: ${templateStyles.layouts?.join(', ')}`;
+  }
+
+  if (designSystemComponents && designSystemComponents.length > 0) {
+    systemContext += `\n\nIncorporate these components: ${designSystemComponents.map(c => c.name).join(', ')}`;
+  }
+
+  systemContext += `\n\nReturn ONLY valid JSON: {"html": "refined HTML markup", "css": "refined CSS styles"}`;
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "system",
+        content: systemContext
+      },
+      {
+        role: "user",
+        content: `CURRENT DESIGN:
+HTML:
+${currentHtml}
+
+CSS:
+${currentCss}
+
+REFINEMENT REQUEST: ${refinementPrompt}
+
+Please refine the design based on the request above. Make the specific changes requested while preserving the overall design structure and quality.
+
+Return JSON with format: {"html": "<div>...</div>", "css": "div { ... }"}`
+      }
+    ],
+    response_format: { type: "json_object" },
+    max_completion_tokens: 16000,
+  });
+
+  const result = JSON.parse(response.choices[0].message.content || '{"html":"","css":""}');
+  
+  console.log('OpenAI refine response:', {
+    hasHtml: !!result.html,
+    htmlLength: result.html?.length || 0,
+    cssLength: result.css?.length || 0
+  });
+
+  if (!result.html || result.html.length === 0) {
+    console.error('OpenAI returned empty refined HTML, returning original');
+    return {
+      device: device.id,
+      html: currentHtml,
+      css: currentCss,
+    };
+  }
+  
+  return {
+    device: device.id,
+    html: result.html,
+    css: result.css || '',
+  };
+}
