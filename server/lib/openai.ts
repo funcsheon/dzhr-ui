@@ -7,6 +7,76 @@ function getOpenAIClient() {
   return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 }
 
+interface ValidationResult {
+  isValid: boolean;
+  score: number;
+  issues: string[];
+}
+
+function validateDesign(html: string, css: string): ValidationResult {
+  const issues: string[] = [];
+  let score = 100;
+
+  if (!html || html.length < 100) {
+    issues.push('HTML content is too short or empty');
+    score -= 50;
+  }
+
+  if (html.includes('lorem ipsum') || html.includes('Lorem Ipsum')) {
+    issues.push('Contains placeholder Lorem Ipsum text');
+    score -= 15;
+  }
+
+  if (html.includes('placeholder') && html.includes('content')) {
+    issues.push('Contains placeholder content markers');
+    score -= 10;
+  }
+
+  const htmlLower = html.toLowerCase();
+  const hasSemanticTags = htmlLower.includes('<header') || 
+                          htmlLower.includes('<main') || 
+                          htmlLower.includes('<section') ||
+                          htmlLower.includes('<article') ||
+                          htmlLower.includes('<nav');
+  
+  if (!hasSemanticTags) {
+    issues.push('Missing semantic HTML5 elements');
+    score -= 10;
+  }
+
+  if (!css || css.length < 50) {
+    issues.push('CSS content is too short or empty');
+    score -= 30;
+  }
+
+  const hasModernCSS = css.includes('flex') || 
+                       css.includes('grid') || 
+                       css.includes('var(--');
+  
+  if (!hasModernCSS) {
+    issues.push('Missing modern CSS features (flexbox, grid, or CSS variables)');
+    score -= 10;
+  }
+
+  const hasColorStyling = css.includes('color') || 
+                          css.includes('background') ||
+                          css.includes('rgb') ||
+                          css.includes('#');
+  
+  if (!hasColorStyling) {
+    issues.push('Missing color styling');
+    score -= 15;
+  }
+
+  const isValid = score >= 70;
+  
+  return {
+    isValid,
+    score: Math.max(0, score),
+    issues
+  };
+}
+
 export async function analyzeWebsiteTemplate(url: string) {
   const openai = getOpenAIClient();
   const response = await openai.chat.completions.create({
@@ -163,13 +233,21 @@ Return JSON: {"html": "<your complete HTML>", "css": "your complete CSS"}`
 
   const result = JSON.parse(response.choices[0].message.content || '{"html":"","css":""}');
   
+  const validation = validateDesign(result.html || '', result.css || '');
+  
   console.log('OpenAI response:', {
     hasHtml: !!result.html,
     htmlLength: result.html?.length || 0,
-    cssLength: result.css?.length || 0
+    cssLength: result.css?.length || 0,
+    validationScore: validation.score,
+    isValid: validation.isValid,
+    issues: validation.issues
   });
 
-  // If OpenAI returns empty, provide a fallback
+  if (!validation.isValid) {
+    console.warn(`Design validation failed (score: ${validation.score}/100). Issues:`, validation.issues);
+  }
+
   if (!result.html || result.html.length === 0) {
     console.error('OpenAI returned empty HTML, using fallback');
     return {
@@ -308,11 +386,20 @@ Return JSON: {"html": "<refined complete HTML>", "css": "refined complete CSS"}`
 
   const result = JSON.parse(response.choices[0].message.content || '{"html":"","css":""}');
   
+  const validation = validateDesign(result.html || '', result.css || '');
+  
   console.log('OpenAI refine response:', {
     hasHtml: !!result.html,
     htmlLength: result.html?.length || 0,
-    cssLength: result.css?.length || 0
+    cssLength: result.css?.length || 0,
+    validationScore: validation.score,
+    isValid: validation.isValid,
+    issues: validation.issues
   });
+
+  if (!validation.isValid) {
+    console.warn(`Refined design validation failed (score: ${validation.score}/100). Issues:`, validation.issues);
+  }
 
   if (!result.html || result.html.length === 0) {
     console.error('OpenAI returned empty refined HTML, returning original');
