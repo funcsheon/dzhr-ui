@@ -69,32 +69,53 @@ export async function generateDesign(params: GenerateDesignParams) {
   const openai = getOpenAIClient();
   const { prompt, device, designSystemUrl, designSystemComponents, templateStyles } = params;
 
-  let systemContext = `You are an expert web designer. Create a complete, functional HTML/CSS design for a ${device.name} (${device.width}x${device.height}px).
+  let systemContext = `You are a senior UI/UX designer with 15+ years of experience in modern web design. You specialize in:
+- Creating visually stunning, conversion-optimized interfaces
+- Following design systems and brand guidelines meticulously
+- Writing semantic, accessible HTML5 (WCAG 2.1 AA compliant)
+- Modern CSS with attention to typography, whitespace, and visual hierarchy
+- Mobile-first responsive design principles
 
-CRITICAL REQUIREMENTS:
-1. Return COMPLETE, WORKING HTML with actual content (not placeholders)
-2. Include ALL necessary CSS for styling
-3. Make it visually beautiful and modern
-4. Use semantic HTML5 elements
-5. Ensure responsive design within ${device.width}x${device.height}px constraints`;
+DESIGN PHILOSOPHY:
+- Prioritize clarity and user experience over decoration
+- Use whitespace intentionally to create visual breathing room
+- Establish clear visual hierarchy through size, weight, and color
+- Ensure high contrast for readability (4.5:1 minimum)
+- Create designs that feel polished, professional, and trustworthy
+
+TECHNICAL REQUIREMENTS FOR ${device.name} (${device.width}x${device.height}px):
+1. Return COMPLETE, PRODUCTION-READY HTML with real, meaningful content
+2. Include ALL necessary CSS with modern best practices (flexbox, grid, custom properties)
+3. Use semantic HTML5 elements (header, nav, main, article, section, footer)
+4. Ensure perfect responsive behavior within device constraints
+5. Add micro-interactions and hover states for interactive elements
+6. Use CSS variables for colors, spacing, and typography for consistency`;
 
   if (designSystemUrl) {
-    systemContext += `\n\nFollow the design system at: ${designSystemUrl}`;
+    systemContext += `\n\nDESIGN SYSTEM CONSTRAINTS:
+Follow the design system guidelines at: ${designSystemUrl}
+- Match component patterns and naming conventions
+- Use the system's established visual language
+- Maintain consistency with existing design tokens`;
   }
 
   if (templateStyles) {
-    systemContext += `\n\nStyle constraints:
-- Colors: ${templateStyles.colors?.join(', ')}
-- Fonts: ${templateStyles.fonts?.join(', ')}
-- Spacing: ${templateStyles.spacing?.join(', ')}
-- Layouts: ${templateStyles.layouts?.join(', ')}`;
+    systemContext += `\n\nSTYLE REQUIREMENTS (must follow exactly):
+- Color Palette: ${templateStyles.colors?.join(', ')} (use these as primary palette)
+- Typography: ${templateStyles.fonts?.join(', ')} (use these font families)
+- Spacing System: ${templateStyles.spacing?.join(', ')} (maintain consistent spacing)
+- Layout Patterns: ${templateStyles.layouts?.join(', ')} (follow these layout approaches)`;
   }
 
   if (designSystemComponents && designSystemComponents.length > 0) {
-    systemContext += `\n\nIncorporate these components: ${designSystemComponents.map(c => c.name).join(', ')}`;
+    systemContext += `\n\nCOMPONENT LIBRARY:
+Incorporate and reference these design system components: ${designSystemComponents.map(c => c.name).join(', ')}
+Design components that feel native to this system.`;
   }
 
-  systemContext += `\n\nReturn ONLY valid JSON: {"html": "complete HTML markup", "css": "complete CSS styles"}`;
+  systemContext += `\n\nOUTPUT FORMAT:
+Return ONLY valid JSON with this exact structure: {"html": "complete HTML markup", "css": "complete CSS styles"}
+No explanations, no markdown, just pure JSON.`;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -105,19 +126,39 @@ CRITICAL REQUIREMENTS:
       },
       {
         role: "user",
-        content: `Design requirement: ${prompt}
+        content: `DESIGN BRIEF: ${prompt}
 
-Create a stunning ${device.name} interface with:
-- Complete HTML structure (header, main content, footer if needed)
-- Beautiful, modern CSS styling
-- Actual content (not Lorem Ipsum placeholders)
-- Professional color scheme and typography
+STEP-BY-STEP APPROACH:
+1. First, analyze the design requirements and identify the key user goals
+2. Plan the information architecture and content hierarchy
+3. Choose an appropriate layout structure for ${device.name}
+4. Select a cohesive color scheme with proper contrast ratios
+5. Design the interface with attention to typography, spacing, and visual flow
+6. Add polish through subtle shadows, borders, and transitions
 
-Return JSON with format: {"html": "<div>...</div>", "css": "div { ... }"}`
+DELIVERABLES:
+Create a stunning, professional ${device.name} interface featuring:
+- Complete HTML structure (semantic elements: header, nav, main, sections, footer as appropriate)
+- Beautiful, modern CSS with thoughtful typography and spacing
+- Real, contextually appropriate content (no Lorem Ipsum - use actual relevant text)
+- Professional color scheme with intentional color choices
+- Hover states and interactive element styling
+- Polished details (shadows, borders, transitions)
+
+QUALITY STANDARDS:
+✓ Visual hierarchy is immediately clear
+✓ Text is highly readable with proper contrast
+✓ Spacing creates visual breathing room
+✓ Design feels cohesive and intentional
+✓ All interactive elements are obvious and accessible
+✓ Layout works perfectly within ${device.width}x${device.height}px
+
+Return JSON: {"html": "<your complete HTML>", "css": "your complete CSS"}`
       }
     ],
     response_format: { type: "json_object" },
     max_completion_tokens: 16000,
+    temperature: 0.75,
   });
 
   const result = JSON.parse(response.choices[0].message.content || '{"html":"","css":""}');
@@ -172,32 +213,49 @@ export async function refineDesign(params: RefineDesignParams) {
   const openai = getOpenAIClient();
   const { currentHtml, currentCss, refinementPrompt, device, designSystemUrl, designSystemComponents, templateStyles } = params;
 
-  let systemContext = `You are an expert web designer. You have an existing design that needs to be refined based on user feedback.
+  let systemContext = `You are a senior UI/UX designer with expert skills in iterative design refinement. Your approach:
+- Analyze existing design to understand its structure and intent
+- Make precise, targeted changes that improve the design
+- Preserve what's working well while addressing feedback
+- Maintain design consistency and cohesion
+- Ensure all changes enhance user experience
 
-CRITICAL REQUIREMENTS:
-1. Modify the existing HTML/CSS based on the refinement instructions
+REFINEMENT PRINCIPLES:
+- Understand the "why" behind the feedback before making changes
+- Make surgical improvements without disrupting the overall design
+- Enhance visual hierarchy and clarity through refinement
+- Test changes mentally for unintended side effects
+- Preserve the design system's visual language
+
+TECHNICAL REQUIREMENTS FOR ${device.name} (${device.width}x${device.height}px):
+1. Modify the HTML/CSS based PRECISELY on the refinement instructions
 2. Preserve the overall structure and content unless explicitly asked to change
-3. Make targeted improvements based on the user's request
-4. Return COMPLETE, WORKING HTML with all necessary CSS
-5. Ensure the design remains within ${device.width}x${device.height}px constraints`;
+3. Maintain semantic HTML5 and accessibility standards
+4. Keep the design within device constraints
+5. Return COMPLETE, WORKING HTML with all necessary CSS`;
 
   if (designSystemUrl) {
-    systemContext += `\n\nFollow the design system at: ${designSystemUrl}`;
+    systemContext += `\n\nDESIGN SYSTEM CONSTRAINTS:
+Continue following the design system at: ${designSystemUrl}
+Ensure refinements stay consistent with the system's guidelines.`;
   }
 
   if (templateStyles) {
-    systemContext += `\n\nStyle constraints:
-- Colors: ${templateStyles.colors?.join(', ')}
-- Fonts: ${templateStyles.fonts?.join(', ')}
-- Spacing: ${templateStyles.spacing?.join(', ')}
-- Layouts: ${templateStyles.layouts?.join(', ')}`;
+    systemContext += `\n\nSTYLE REQUIREMENTS (maintain consistency):
+- Color Palette: ${templateStyles.colors?.join(', ')}
+- Typography: ${templateStyles.fonts?.join(', ')}
+- Spacing System: ${templateStyles.spacing?.join(', ')}
+- Layout Patterns: ${templateStyles.layouts?.join(', ')}`;
   }
 
   if (designSystemComponents && designSystemComponents.length > 0) {
-    systemContext += `\n\nIncorporate these components: ${designSystemComponents.map(c => c.name).join(', ')}`;
+    systemContext += `\n\nCOMPONENT LIBRARY:
+Stay aligned with these components: ${designSystemComponents.map(c => c.name).join(', ')}`;
   }
 
-  systemContext += `\n\nReturn ONLY valid JSON: {"html": "refined HTML markup", "css": "refined CSS styles"}`;
+  systemContext += `\n\nOUTPUT FORMAT:
+Return ONLY valid JSON: {"html": "refined HTML markup", "css": "refined CSS styles"}
+No explanations, just pure JSON.`;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -208,7 +266,8 @@ CRITICAL REQUIREMENTS:
       },
       {
         role: "user",
-        content: `CURRENT DESIGN:
+        content: `EXISTING DESIGN:
+
 HTML:
 ${currentHtml}
 
@@ -217,13 +276,34 @@ ${currentCss}
 
 REFINEMENT REQUEST: ${refinementPrompt}
 
-Please refine the design based on the request above. Make the specific changes requested while preserving the overall design structure and quality.
+REFINEMENT APPROACH:
+1. Analyze the current design and understand what's working
+2. Identify exactly what needs to change based on the refinement request
+3. Plan the minimal changes needed to address the feedback
+4. Implement the changes while preserving design consistency
+5. Review to ensure no unintended consequences
 
-Return JSON with format: {"html": "<div>...</div>", "css": "div { ... }"}`
+DELIVERABLES:
+Refine the design with:
+- Targeted changes that directly address the feedback
+- Preserved design structure and successful elements
+- Enhanced visual polish and user experience
+- Maintained semantic HTML and accessibility
+- Continued adherence to design system (if applicable)
+
+QUALITY CHECKS:
+✓ Refinement request is fully addressed
+✓ Design consistency is maintained
+✓ No breaking changes to working elements
+✓ Visual hierarchy remains clear
+✓ All functionality is preserved or enhanced
+
+Return JSON: {"html": "<refined complete HTML>", "css": "refined complete CSS"}`
       }
     ],
     response_format: { type: "json_object" },
     max_completion_tokens: 16000,
+    temperature: 0.55,
   });
 
   const result = JSON.parse(response.choices[0].message.content || '{"html":"","css":""}');
